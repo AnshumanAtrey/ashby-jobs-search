@@ -4,7 +4,7 @@ Run: python -m unittest discover -s tests -t .
 """
 import unittest
 
-from src.inputs import DEFAULT_MAX_JOBS, InputError, parse_input, read_company, read_job_url, read_search_term
+from src.inputs import DEFAULT_MAX_JOBS, parse_input, read_company, read_job_url, read_search_term
 
 NAMES = {'ramp': 'ramp', 'openai': 'openai', 'blackpoint cyber': 'Blackpoint Cyber', 'blackpointcyber': 'Blackpoint Cyber'}
 JOB = 'https://jobs.ashbyhq.com/ramp/34413f8d-26bf-4bbc-8ade-eb309a0e2245'
@@ -67,9 +67,16 @@ class Places(unittest.TestCase):
     def test_every_work_type_is_the_same_as_none(self):
         self.assertEqual(parse({'workType': ['remote', 'hybrid', 'onsite']}).work_types, [])
 
-    def test_unknown_work_type_fails_before_charging(self):
-        with self.assertRaises(InputError):
-            parse({'workType': ['underwater']})
+    def test_unknown_work_type_keeps_every_work_type_with_a_note(self):
+        cfg = parse({'workType': ['underwater']})
+        self.assertEqual(cfg.work_types, [])
+        self.assertIn('every one is kept', cfg.notes[0])
+
+    def test_typed_work_types_and_any(self):
+        self.assertEqual(parse({'workType': ['remote, hybrid']}).work_types, ['remote', 'hybrid'])
+        self.assertEqual(parse({'workType': 'Remote'}).work_types, ['remote'])
+        self.assertEqual(parse({'workType': ['any']}).work_types, [])
+        self.assertEqual(parse({'employmentType': ['all']}).job_types, [])
 
     def test_job_type_words(self):
         self.assertEqual(parse({'employmentType': 'internship, Full time'}).job_types, ['intern', 'full-time'])
@@ -98,6 +105,7 @@ class Numbers(unittest.TestCase):
         self.assertIsNone(parse({'maxJobs': 0}).max_jobs)
         self.assertIsNone(parse({'maxJobs': 'all'}).max_jobs)
         self.assertEqual(parse({'maxJobs': 'lots'}).max_jobs, DEFAULT_MAX_JOBS)
+        self.assertEqual(parse({'maxJobs': -5}).max_jobs, DEFAULT_MAX_JOBS)
 
 
 class Companies(unittest.TestCase):
@@ -114,9 +122,10 @@ class Companies(unittest.TestCase):
         self.assertIsNone(slug)
         self.assertIn('jobs.ashbyhq.com', why)
 
-    def test_no_readable_company_fails(self):
-        with self.assertRaises(InputError):
-            parse({'companies': ['https://example.com/careers']})
+    def test_no_readable_company_searches_every_company_with_a_note(self):
+        cfg = parse({'companies': ['https://example.com/careers']})
+        self.assertEqual(cfg.companies, [])
+        self.assertIn('every company was searched', cfg.notes[0])
 
 
 class JobLinks(unittest.TestCase):
@@ -132,9 +141,19 @@ class JobLinks(unittest.TestCase):
         self.assertEqual(len(cfg.job_urls), 1)
         self.assertIn('does not search', cfg.notes[-1])
 
-    def test_no_readable_link_fails(self):
-        with self.assertRaises(InputError):
-            parse({'jobUrls': ['https://example.com/job/1']})
+    def test_no_readable_link_searches_instead_with_a_note(self):
+        cfg = parse({'jobUrls': ['https://example.com/job/1'], 'searchTerms': ['engineer']})
+        self.assertEqual((cfg.job_urls, cfg.search_terms), ([], ['engineer']))
+        self.assertIn('searched instead', cfg.notes[0])
+
+
+class NothingStopsARun(unittest.TestCase):
+    def test_wrong_types_fall_back_to_defaults(self):
+        cfg = parse({'searchTerms': {'a': 1}, 'location': 7, 'maxJobs': {'x': 1}, 'includeDetails': 'maybe',
+                     'postedWithin': ['7 days'], 'workType': None, 'companies': 'openai'})
+        self.assertEqual(cfg.max_jobs, DEFAULT_MAX_JOBS)
+        self.assertFalse(cfg.include_details)
+        self.assertEqual(cfg.companies, ['openai'])
 
 
 if __name__ == '__main__':

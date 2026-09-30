@@ -1,6 +1,6 @@
 {
     "title": "Ashby Jobs Search",
-    "description": "Type a job title and press Start. The actor reads every company's Ashby job board live (3,478 hiring companies, 61,000+ open jobs) and saves the newest matching jobs with their links. Leave every field empty for the newest jobs on all of Ashby, or paste job links at the bottom to check whether they are still open.",
+    "description": "Type a job title and press Start: you get the newest matching jobs from every company on Ashby (3,478 hiring companies, 61,000+ open jobs). Every other field is optional. Press Start with the form empty for the newest jobs of every kind.",
     "type": "object",
     "schemaVersion": 1,
     "properties": {
@@ -8,10 +8,8 @@
             "title": "Job titles to find (searchTerms)",
             "type": "array",
             "editor": "stringList",
-            "description": "Enter the job titles or keywords to find, one per line, such as software engineer or product designer. A job matches when its title has every word of one line: frontend also finds Front-End and Front End, and java does not find JavaScript. Leave it empty for every job. A pasted Google dork (site:jobs.ashbyhq.com intext:frontend) or a jobs.ashbyhq.com link is read too. Same as titleSearch or keywords in other job actors.",
-            "prefill": [
-                "software engineer"
-            ],
+            "description": "Type the job titles or keywords to find, one per line, for example software engineer. A job matches when its title has every word of a line: frontend also finds Front-End. Leave it empty to get the newest jobs of every kind. A pasted Google dork or Ashby link works too.",
+            "placeholderValue": "software engineer",
             "example": [
                 "software engineer"
             ],
@@ -21,10 +19,10 @@
             "title": "Where the job is (location)",
             "type": "array",
             "editor": "stringList",
-            "description": "Enter where the job is: cities, states or countries, one per line, such as United States, London or Germany. A job matches when any of its locations is one of them; a country matches by name or code, so US, USA and United States are the same. Typing Remote here asks for remote jobs. Leave it empty for every place. Same as locationSearch in other job actors.",
+            "description": "Type where the jobs should be: a city, state or country, one per line, for example London or United States. US, USA and United States all work. Type Remote here to get remote jobs. Leave it empty for anywhere.",
+            "placeholderValue": "United States",
             "example": [
-                "United States",
-                "London"
+                "United States"
             ],
             "default": []
         },
@@ -32,10 +30,10 @@
             "title": "Remote or onsite (workType)",
             "type": "array",
             "editor": "select",
-            "description": "Pick remote, hybrid or onsite (in the office), or several. Each job's own Ashby work type is used, and a job without one counts as remote when its location says Remote. Leave it empty for every work type. Words such as Remote, WFH or offline typed in Where the job is work too.",
+            "description": "Pick remote, hybrid or onsite, or several. Leave it empty for all of them. Typed words such as wfh or office work too.",
             "items": {
                 "type": "string",
-                "enum": [
+                "enumSuggestedValues": [
                     "remote",
                     "hybrid",
                     "onsite"
@@ -46,13 +44,16 @@
                     "Onsite, in the office (onsite)"
                 ]
             },
+            "example": [
+                "remote"
+            ],
             "default": []
         },
         "postedWithin": {
             "title": "Posted in the last (postedWithin)",
             "type": "string",
             "editor": "select",
-            "description": "Pick how long ago the jobs were posted, at most: in the last 24 hours, 3 days, 7 days, 30 days or any time, or type your own period such as 48 hours or 2 weeks. It uses the date each job was published on Ashby. Any time, the default, keeps every open job. Same as timeRange or datePosted in other job actors.",
+            "description": "Pick how new the jobs must be: posted in the last 24 hours, 3 days, 7 days or 30 days. Any time, the default, keeps every open job, newest first. You can also type your own period, such as 48 hours or 2 weeks.",
             "enumSuggestedValues": [
                 "24 hours",
                 "3 days",
@@ -60,44 +61,42 @@
                 "30 days",
                 "any time"
             ],
-            "prefill": "7 days",
-            "example": "7 days",
-            "default": "any time",
             "enumTitles": [
                 "24 hours",
                 "3 days",
                 "7 days",
                 "30 days",
                 "any time"
-            ]
+            ],
+            "example": "24 hours",
+            "default": "any time"
         },
         "maxJobs": {
             "title": "Number of jobs (maxJobs)",
             "type": "integer",
             "editor": "number",
             "unit": "jobs",
-            "description": "Enter how many jobs to save, newest first: 100 by default. Enter 0 for every matching job. Each saved job is one charged row, so this also caps the cost of a run. Same as limit or maxItems in other actors.",
-            "prefill": 20,
-            "example": 20,
+            "description": "Type how many jobs to get, newest first: 100 by default. Type 0 to get every matching job. Each job is one charged row, so this also sets the most a run can cost.",
+            "prefill": 100,
+            "example": 100,
             "default": 100,
-            "minimum": 0,
             "sectionCaption": "How many and how much"
         },
         "includeDetails": {
             "title": "Full details (includeDetails)",
             "type": "boolean",
             "editor": "checkbox",
-            "description": "Choose whether to add the full job description (text and HTML), the salary numbers (minimum, maximum, currency and per year, month or hour), equity, and the job's city, region and country. Off by default: each row then has the title, company, locations, work type, job type, department, pay summary, posting date and the job and apply links. A row with details costs $1.35 per 1,000 instead of $1.20.",
+            "description": "Tick to add the full details of each job: the description, the salary numbers (lowest, highest, currency, per year or hour), equity, and the city, region and country. A job with details costs $1.35 per 1,000 instead of $1.20.",
             "default": false
         },
         "excludeTerms": {
             "title": "Leave out words (excludeTerms)",
             "type": "array",
             "editor": "stringList",
-            "description": "Enter words that leave a job out when they are in its title, one per line, such as senior, manager or intern. Matched the same way as the job titles above. Leave it empty to leave nothing out. Same as titleExclusionSearch in other job actors.",
+            "description": "Type words that leave a job out when its title has them, one per line, for example senior or manager. Leave it empty to keep every job.",
+            "placeholderValue": "senior",
             "example": [
-                "senior",
-                "manager"
+                "senior"
             ],
             "default": [],
             "sectionCaption": "Narrow the search"
@@ -106,10 +105,10 @@
             "title": "Job type (employmentType)",
             "type": "array",
             "editor": "select",
-            "description": "Pick the job type: full-time, part-time, contract, intern or temporary, or several, as each company set it on Ashby. Leave it empty for every job type.",
+            "description": "Pick the job type: full-time, part-time, contract, internship or temporary, or several. Leave it empty for every job type. Typed words such as freelance or temp work too.",
             "items": {
                 "type": "string",
-                "enum": [
+                "enumSuggestedValues": [
                     "full-time",
                     "part-time",
                     "contract",
@@ -124,23 +123,26 @@
                     "Temporary"
                 ]
             },
+            "example": [
+                "full-time"
+            ],
             "default": []
         },
         "searchDescriptions": {
             "title": "Match descriptions (searchDescriptions)",
             "type": "boolean",
             "editor": "checkbox",
-            "description": "Choose whether a keyword may also match in a job's description, as the exact phrase, and not only in its title: python then finds every job that asks for Python. Off by default. It reads the full job list of every company, so a run takes about two minutes more.",
+            "description": "Tick to match your keywords in the job description too, not only in the title: python then finds every job that asks for Python. A run takes about two minutes longer.",
             "default": false
         },
         "companies": {
             "title": "Only these companies (companies)",
             "type": "array",
             "editor": "stringList",
-            "description": "Enter companies to search only their Ashby boards, one per line: the company name (OpenAI), the board name (openai) or the board link (https://jobs.ashbyhq.com/openai). A company missing from the actor's list of 3,814 boards is looked up anyway. Leave it empty to search every company, which is the point of this actor. A run with a few companies takes seconds.",
+            "description": "Type companies to search only them, one per line: a name (OpenAI), a board name (openai) or a board link (https://jobs.ashbyhq.com/openai). Leave it empty to search every company on Ashby. A few companies take seconds.",
+            "placeholderValue": "openai",
             "example": [
-                "openai",
-                "https://jobs.ashbyhq.com/ramp"
+                "openai"
             ],
             "default": []
         },
@@ -148,7 +150,8 @@
             "title": "Job links to check (jobUrls)",
             "type": "array",
             "editor": "stringList",
-            "description": "Paste Ashby job links, one per line, to check each one on its company's live board instead of searching: every link comes back open (with the job's data), closed, or not found (no such Ashby board). Use it to clean dead links out of a job board or a spreadsheet. The job page, its /application page and links with tracking parameters all work. When links are given, the search fields are not used.",
+            "description": "Paste Ashby job links, one per line, to check whether they are still open instead of searching. Each link comes back open (with the job), closed, or not found. Handy for cleaning dead links out of a job board or a sheet.",
+            "placeholderValue": "https://jobs.ashbyhq.com/ramp/34413f8d-26bf-4bbc-8ade-eb309a0e2245",
             "example": [
                 "https://jobs.ashbyhq.com/ramp/34413f8d-26bf-4bbc-8ade-eb309a0e2245"
             ],

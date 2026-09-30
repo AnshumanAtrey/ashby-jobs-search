@@ -13,7 +13,7 @@ run time by title, place, work type, job type and posting date, newest first.
 - Job links mode (jobUrls): each link is looked up on its board's live API: open, closed, or not found.
 - Charging: one event per delivered row, "job" for a row without details and for a closed or not-found
   link, "job-details" for a row with details. The SDK delivers only the rows the spending limit can pay
-  for. A run that fails on its input costs $0; there is no start fee.
+  for. No start fee. No input stops a run: unreadable fields fall back to their defaults with a note.
 - The status message can never fail the run: SDK 3.x raises on some run origins after storing it.
 """
 import asyncio
@@ -28,7 +28,7 @@ from pathlib import Path
 from apify import Actor
 
 from . import ashby
-from .inputs import Config, InputError, parse_input
+from .inputs import Config, parse_input
 from .rows import Filters, dedupe_key, job_row, link_row, parse_time
 
 LINK_EVENT = 'job'                 # these two must equal the event keys of the pricing in .actor/store.json
@@ -436,12 +436,7 @@ async def main() -> None:
     async with Actor:
         raw = await Actor.get_input() or {}
         companies, updated = load_companies()
-        try:
-            cfg = parse_input(raw, name_index(companies))
-        except InputError as exc:
-            await Actor.set_value('OUTPUT', {'status': 'failed', 'message': str(exc)})
-            await Actor.fail(status_message=str(exc))
-            return
+        cfg = parse_input(raw, name_index(companies))   # never raises: unreadable fields fall back with a note
         delivery = Delivery()
         Actor.log.info(
             f'Ashby Jobs Search: {"checking " + plural(len(cfg.job_urls), "job link") if cfg.job_urls else "searching"}'
@@ -458,10 +453,10 @@ async def main() -> None:
         await run.write_output(final=False)
         first_event = DETAILS_EVENT if cfg.include_details and not cfg.job_urls else LINK_EVENT
         if not delivery.can_pay(first_event):
-            message = ('The spending limit of this run is too low for one row, so nothing was searched. '
-                       'Raise the maximum cost per run and start again.')
-            await Actor.set_value('OUTPUT', {'status': 'failed', 'message': message})
-            await Actor.fail(status_message=message)
+            message = ('The maximum cost of this run is too low for one job, so nothing was searched and nothing '
+                       'was charged. Raise the maximum cost per run and start again.')
+            await Actor.set_value('OUTPUT', {'status': 'done', 'message': message, 'jobsSaved': 0})
+            await safe_status(message)
             return
         if cfg.job_urls:
             await run.check_links()

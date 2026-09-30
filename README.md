@@ -52,7 +52,8 @@ Pay per event: **$1.20 per 1,000 jobs** ($0.0012 a row), or **$1.35 per 1,000 wi
 
 | Run | Rows | Price | With full details |
 |---|---|---|---|
-| The example input: software engineer, last 7 days, 20 jobs | 20 | $0.024 | $0.027 |
+| One job title and the defaults (the 100 newest matches) | 100 | $0.12 | $0.135 |
+| software engineer, last 7 days, 20 jobs | 20 | $0.024 | $0.027 |
 | 100 jobs | 100 | $0.12 | $0.135 |
 | 1,000 jobs | 1,000 | $1.20 | $1.35 |
 | Every open job on Ashby (about 60,000) | 60,000 | $72 | $81 |
@@ -82,29 +83,27 @@ Where others are cheaper: jobo.world, webdata_labs, blackfalcondata and johnvc c
 
 ## Which inputs does it take?
 
-No field is required. An empty form returns the 100 newest jobs on all of Ashby.
+Nothing is required. Type one job title and press Start, and every other field uses its default: every place, every work type, any posting date, the 100 newest jobs. Press Start with the form empty for the 100 newest jobs on all of Ashby. No input stops a run: anything the actor cannot read falls back to the field's default, and the run summary says so.
 
 | Field | Default | What it does |
 |---|---|---|
-| Job titles to find (`searchTerms`) | every job | One title or keyword per line. A job matches when its title has every word of one line. A pasted Google dork or jobs.ashbyhq.com link is read too. |
-| Where the job is (`location`) | every place | Cities, states or countries, one per line. Countries match by name or code. Remote typed here means remote jobs. |
-| Remote or onsite (`workType`) | every work type | remote, hybrid, onsite, or several. |
-| Posted in the last (`postedWithin`) | any time | 24 hours, 3 days, 7 days, 30 days, any time, or your own period such as 48 hours or 2 weeks. |
-| Number of jobs (`maxJobs`) | 100 | How many jobs to save, newest first. 0 saves every match. |
+| Job titles to find (`searchTerms`) | every job | One title or keyword per line. A job matches when its title has every word of a line. A pasted Google dork or jobs.ashbyhq.com link works too. |
+| Where the job is (`location`) | anywhere | Cities, states or countries, one per line. US, USA and United States are the same. Remote typed here means remote jobs. |
+| Remote or onsite (`workType`) | all | remote, hybrid, onsite, or several. Typed words such as wfh or office work too. |
+| Posted in the last (`postedWithin`) | any time | 24 hours, 3 days, 7 days, 30 days, or your own period such as 48 hours or 2 weeks. |
+| Number of jobs (`maxJobs`) | 100 | How many jobs to get, newest first. 0 gets every match. |
 | Full details (`includeDetails`) | off | Adds the description (text and HTML), salary numbers, equity, city, region and country. |
-| Leave out words (`excludeTerms`) | nothing | Words that rule a job out, such as senior or manager. |
-| Job type (`employmentType`) | every job type | full-time, part-time, contract, intern, temporary. |
+| Leave out words (`excludeTerms`) | nothing | Words that leave a job out when its title has them, such as senior or manager. |
+| Job type (`employmentType`) | every type | full-time, part-time, contract, intern, temporary, or several. |
 | Match descriptions (`searchDescriptions`) | off | Also match keywords as a phrase in the description (python finds every job that asks for Python). |
 | Only these companies (`companies`) | every company | Company names, board names or board links. Companies outside the actor's list are looked up anyway. |
 | Job links to check (`jobUrls`) | none | Ashby job links to check instead of searching: open, closed or not found. |
 
-Example input (the form's starting input):
+The simplest input, one job title:
 
 ```json
 {
-  "searchTerms": ["software engineer"],
-  "postedWithin": "7 days",
-  "maxJobs": 20
+  "searchTerms": ["software engineer"]
 }
 ```
 
@@ -142,12 +141,20 @@ The run summary is the OUTPUT record: boards read, boards and companies with a m
 
 Measured on Apify on 2026-09-30 (build 1.0.1) with the default settings (1024 MB of memory, 32 boards read at once):
 
-- **The example input** (every board, a title, last 7 days): 103 seconds. The first pass reads the 3,814 board pages; the second reads the full job list only of the 1,389 boards whose titles could match. Peak memory 184 MB.
+- **A job title, last 7 days, 20 jobs** (every board): 103 seconds. The first pass reads the 3,814 board pages; the second reads the full job list only of the 1,389 boards whose titles could match. Peak memory 184 MB.
 - **Every open job on Ashby** (an empty form, the worst case): 143 seconds for 59,641 jobs at 3,464 companies, 1,282 duplicate postings left out. Peak memory 254 MB.
 - **A few named companies**: about a second.
 - No board refused or failed in either run. CPU stayed near a quarter of a core, so more memory buys little speed.
 
 ## Common questions
+
+### Can I just type one keyword and press Start?
+
+Yes. Type a job title such as product designer and press Start: you get the 100 newest matching jobs from every Ashby company, from any place, any work type and any date. Add the other fields only to narrow the search.
+
+### What happens if I type something the actor cannot read?
+
+The run still goes ahead. A value it cannot read falls back to the field's default (a period such as soonish means any time, a job count such as lots means 100), and the run summary, the OUTPUT record, lists every note about how the input was read.
 
 ### Is this the same as the Google dork site:jobs.ashbyhq.com?
 
@@ -243,4 +250,4 @@ If you need a field, a filter or an output format this actor does not have, the 
 
 ## Last updated
 
-2026-09-30 (version 1.0)
+2026-10-01 (version 1.1)

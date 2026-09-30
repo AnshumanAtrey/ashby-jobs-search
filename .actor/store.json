@@ -4,13 +4,11 @@
   "actorId": "QzMfW9AHG9SBNkJOE",
   "seoTitle": "Ashby Jobs Scraper - Search Every Ashby Job Board",
   "seoDescription": "Search every Ashby job board at once: titles, locations, remote or hybrid, salaries and posting dates. Newest jobs first, read live, no login or API key.",
-  "exampleRunInput$comment": "Equal to the INPUT_SCHEMA prefill, so it is also the input of Apify's daily QA run (must succeed with rows within 5 minutes). On Apify, build 1.0.1, 1024 MB, 2026-09-30 (run rfAszSyqKnlKplTRQ): 3,814 boards read, 1,389 with a matching title, 359 software engineer jobs posted in the last 7 days at 182 companies, the 20 newest saved, 103 s, $0.0039 of platform usage.",
+  "exampleRunInput$comment": "The API code samples and the .md input example. One job title, as the owner wants the actor used (2026-10-01): type one keyword, press Start. It differs from the form on purpose: the form prefills no keyword (a prefilled keyword row would be searched next to the one a user adds) and only maxJobs at its default of 100, so the daily QA run of the prefill reads every board and saves the 100 newest jobs (143 s, $0.0071 on Apify, run 4fJPD8VvbNzVUQ0cZ). Both succeed every day.",
   "exampleRunInput": {
     "searchTerms": [
       "software engineer"
-    ],
-    "postedWithin": "7 days",
-    "maxJobs": 20
+    ]
   },
   "actorPermissionLevel": "LIMITED_PERMISSIONS",
   "isPublic$comment": "Published 2026-09-30 after the platform tests on build 1.0.2 (1024 MB): the example input (20 rows, 20 job charges, run ZlJMB6yat2T8vZX4Z), details with filters (5 rows, 5 job-details charges, k1wCe7wEArWthb6S8), a pasted board link (5, jPowPHbbvcBWeXCtT), company names with a country name and offline typed as a place (3, nbj2OUUtkx046z7nb), an unreadable company (FAILED at $0 with the plain message, srVrwHXYhl1Fvqjbm), a $0.005 spending limit (4 rows, 4 charges, stopped with the limit note, xPxJGwSjukVIVWACo) and the link checker (open, closed, not found: 3 rows, 3 charges, oKLcKclbMLmgZR7jQ). Invalid dropdown values (workType underwater) are refused by the platform before the run starts, at $0. On the owner's account a spending limit also counts platform usage: a full scan with a $0.005 limit was aborted at $0.0085 of usage with 0 rows (UsMuy7ylzg5HBpKTb); users on pay per event are limited by event charges only. A paid public actor cannot be made private again until monetization is cancelled in Console.",

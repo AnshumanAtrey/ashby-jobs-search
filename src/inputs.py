@@ -1,12 +1,13 @@
 """
 What people type -> a clean run configuration (manager/rules/SEO.md section 11.5).
 
-No field is required: an empty form returns the newest jobs from every company. Accepted as typed:
+No field is required and no input stops a run (owner rule, 2026-10-01: type one keyword, press Start,
+get the newest jobs). An empty form returns the newest jobs from every company. Accepted as typed:
 several entries on one line split by commas, a pasted Google dork (site:jobs.ashbyhq.com intext:frontend
 reads as the keyword frontend), board links instead of company names, work types and job types in
 everyday words ("offline" is onsite, "internship" is intern), "remote" typed as a location, and periods
-such as "24h", "2 weeks" or a number of days. Input that can be read one obvious way is fixed and
-noted; only input that cannot be read fails, before anything is charged.
+such as "24h", "2 weeks" or a number of days. Anything that cannot be read falls back to the field's
+default, and the OUTPUT record and the log say what was read and how.
 
 Pure module: no Apify or network import, so the tests run offline.
 """
@@ -43,10 +44,7 @@ PERIOD = re.compile(r'^(?:last|past)?\s*(\d+(?:\.\d+)?)?\s*(h|hr|hrs|hour|hours|
 PERIOD_DAYS = {'h': 1 / 24, 'hr': 1 / 24, 'hrs': 1 / 24, 'hour': 1 / 24, 'hours': 1 / 24, 'd': 1, 'day': 1,
                'days': 1, 'w': 7, 'wk': 7, 'week': 7, 'weeks': 7, 'm': 30, 'mo': 30, 'month': 30, 'months': 30}
 ANY_TIME = {'', 'any', 'any time', 'anytime', 'all', 'all time', 'ever', 'none', '0'}
-
-
-class InputError(ValueError):
-    """Input that cannot be read. The message says what to type."""
+EVERY = {'any', 'all', 'every', 'both', 'either', 'any type', 'all types', 'no preference'}
 
 
 @dataclass
@@ -151,10 +149,12 @@ def _alias(text: str, aliases: dict[str, str]) -> str | None:
 
 
 def parse_choices(value, key: str, allowed: tuple[str, ...], aliases: dict[str, str], notes: list[str]) -> list[str]:
-    """Work types or job types in everyday words -> the fixed values. Unknown words are dropped with a
-    note; when none is known the run cannot be what was asked, so it fails before anything is charged."""
+    """Work types or job types in everyday words -> the fixed values, empty for every one. Unknown words
+    are dropped with a note; when none is known, every one is kept."""
     chosen, unknown = [], []
     for token in _items(value):
+        if ' '.join(token.lower().split()) in EVERY:
+            return []
         name = _alias(token, aliases)
         if name is None:
             unknown.append(token)
@@ -166,8 +166,8 @@ def parse_choices(value, key: str, allowed: tuple[str, ...], aliases: dict[str, 
     if unknown and chosen:
         notes.append(f'{key} has no option {", ".join(unknown)}, so it was left out.')
     if unknown and not chosen:
-        raise InputError(f'{key} has no option {", ".join(unknown)}. Use {", ".join(allowed)}, '
-                         f'or leave it empty for every one.')
+        notes.append(f'{key} has no option {", ".join(unknown)}, so every one is kept. The options are '
+                     f'{", ".join(allowed)}.')
     return chosen if len(chosen) < len(allowed) else []
 
 
@@ -224,8 +224,8 @@ def parse_max_jobs(value, notes: list[str]) -> int | None:
         notes.append(f'Could not read maxJobs "{value}" as a number, so it is {DEFAULT_MAX_JOBS}.')
         return DEFAULT_MAX_JOBS
     if n < 0:
-        notes.append(f'maxJobs {n} is below 0, so every match is returned.')
-        return None
+        notes.append(f'maxJobs {n} is below 0, so it is {DEFAULT_MAX_JOBS}.')
+        return DEFAULT_MAX_JOBS
     if n > MAX_JOBS_CAP:
         notes.append(f'maxJobs {n:,} is above {MAX_JOBS_CAP:,}, so every match is returned.')
         return None
@@ -321,12 +321,12 @@ def parse_input(raw: dict | None, company_names: dict[str, str] | None = None) -
     words, pasted_jobs, pasted_boards = route_links(raw.get('searchTerms'), notes)
     job_urls = parse_job_urls(_items(raw.get('jobUrls')) + pasted_jobs, skipped)
     if _items(raw.get('jobUrls')) and not job_urls:
-        raise InputError('None of the job links could be read. ' + skipped[0][1])
+        notes.append('None of the job links could be read, so the run searched instead. ' + skipped[0][1])
     work_types = parse_choices(raw.get('workType'), 'workType', WORK_TYPES, WORK_TYPE_ALIASES, notes)
     locations, work_types = parse_locations(raw.get('location'), work_types, notes)
     companies = parse_companies(_items(raw.get('companies')) + pasted_boards, company_names, notes, skipped)
     if _items(raw.get('companies')) and not companies:
-        raise InputError('None of the companies could be read. ' + skipped[-1][1])
+        notes.append('None of the companies could be read, so every company was searched. ' + skipped[-1][1])
     search_terms = parse_terms(words, 'searchTerms', notes, skipped, companies)
     cfg = Config(
         search_terms=search_terms,

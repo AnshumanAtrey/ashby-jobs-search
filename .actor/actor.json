@@ -3,7 +3,7 @@
     "name": "ashby-jobs-search",
     "title": "Ashby Jobs Scraper & API - All Companies, Remote, Last 24 Hours",
     "description": "Ashby jobs scraper and API for every company on jobs.ashbyhq.com, searched live by job title, location, remote or onsite and posting date, newest first. 3,478 hiring companies, 61,000+ open jobs. The site:jobs.ashbyhq.com Google dork done at the source: full details, salaries, dead-link checks.",
-    "version": "1.0",
+    "version": "1.1",
     "buildTag": "latest",
     "categories": [
         "JOBS",

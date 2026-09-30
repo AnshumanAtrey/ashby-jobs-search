@@ -58,6 +58,14 @@ jobs:
           APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
         run: node scripts/store-metadata.mjs
 
+      # Example tasks: each becomes a public landing page with its own Google-indexed page
+      # (up to 10 per Actor). Created, updated and published from .actor/tasks.json; never deleted.
+      - name: Publish example tasks
+        if: hashFiles('.actor/tasks.json') != ''
+        env:
+          APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+        run: node scripts/publish-tasks.mjs
+
   # List this Actor in the official MCP Registry, pointing at Apify's hosted MCP
   # endpoint (callers bring their own Apify token, so runs bill as usual).
   # Runs only after a successful deploy. GitHub OIDC proves io.github.<owner>/*,

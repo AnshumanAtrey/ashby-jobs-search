@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.1] - 2026-10-01
+
+One keyword and Start is the whole job (owner rule): nothing is prefilled but the job count, and no input stops a run.
+
+### Changed
+- The form opens with no keyword and no date filter: type a job title and press Start for the 100 newest matches
+  (`maxJobs` is the only prefilled field, at its default of 100). Empty boxes show an example as grey hint text.
+- Plainer field names and help texts; the JSON key stays in brackets.
+- Remote or onsite and Job type accept typed words next to the listed choices (`enumSuggestedValues`), so an API
+  call with "Remote", "wfh" or "freelance" is read instead of refused by the platform.
+- Nothing fails on input any more: unreadable companies, job links, work types or job types fall back to their
+  defaults with a note; a negative job count means 100; a spending limit too low for one job ends the run at $0
+  without an error.
+
+### Added
+- Ten published example tasks (`.actor/tasks.json`, published by `scripts/publish-tasks.mjs` in CI).
+
 ## [1.0] - 2026-10-01 (listing)
 
 - Logo: the Ashby wordmark with JOBS on Ashby purple (option 6 in manager/rules/logos/ashby-jobs-search/).

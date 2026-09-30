@@ -1,0 +1,110 @@
+{
+  "$comment": "Example tasks published on the Store by scripts/publish-tasks.mjs after every deploy (CI only). Each one is a search people type, with its own Google-indexed landing page and .md (manager/rules/SEO.md section 18). Limits: title 63, description 400, seoTitle 60, seoDescription 160 (154 kept), 10 per actor. inputSchemaFields must stay fields of the input schema, or the page stops showing after a build. Every input was run locally on 2026-10-01 and returned jobs.",
+  "options": {
+    "build": "latest",
+    "memoryMbytes": 1024,
+    "timeoutSecs": 1800
+  },
+  "tasks": [
+    {
+      "name": "remote-software-engineer-jobs-last-24-hours",
+      "title": "Find remote software engineer jobs posted in the last 24 hours",
+      "description": "Get every remote software engineer job that the 3,400+ companies hiring on Ashby posted in the last day, newest first, with the company, location, pay range and apply link. Schedule it daily for a fresh remote job feed.",
+      "input": {"searchTerms": ["software engineer"], "workType": ["remote"], "postedWithin": "24 hours", "maxJobs": 100},
+      "seoTitle": "Remote Software Engineer Jobs, Last 24 Hours",
+      "seoDescription": "New remote software engineer jobs from 3,400+ companies on Ashby, posted in the last 24 hours, with the company, location, pay range and apply link.",
+      "inputSchemaFields": ["searchTerms", "workType", "postedWithin", "maxJobs"],
+      "datasetView": "jobs"
+    },
+    {
+      "name": "newest-startup-jobs-today",
+      "title": "Get the newest startup jobs posted today on Ashby",
+      "description": "Every job posted in the last 24 hours by the companies that hire on Ashby, from OpenAI and Ramp to seed-stage startups, newest first. A daily feed for job boards, newsletters and job seekers.",
+      "input": {"postedWithin": "24 hours", "maxJobs": 200},
+      "seoTitle": "New Startup Jobs Posted Today on Ashby",
+      "seoDescription": "The newest jobs from 3,400+ companies on Ashby, posted in the last 24 hours: title, company, location, remote or onsite, pay range and apply link.",
+      "inputSchemaFields": ["postedWithin", "maxJobs"],
+      "datasetView": "jobs"
+    },
+    {
+      "name": "ai-machine-learning-engineer-jobs",
+      "title": "Find AI and machine learning engineer jobs at startups",
+      "description": "Machine learning engineer, AI engineer and applied scientist jobs from the startups and AI labs that hire on Ashby, posted in the last 30 days, newest first, with pay ranges and apply links.",
+      "input": {"searchTerms": ["machine learning engineer", "ai engineer", "ml engineer", "applied scientist"], "postedWithin": "30 days", "maxJobs": 100},
+      "seoTitle": "AI and Machine Learning Engineer Jobs at Startups",
+      "seoDescription": "Machine learning, AI engineer and applied scientist jobs from startups and AI labs on Ashby, posted in the last 30 days, with pay ranges and apply links.",
+      "inputSchemaFields": ["searchTerms", "postedWithin", "maxJobs"],
+      "datasetView": "jobs"
+    },
+    {
+      "name": "openai-jobs-with-salaries",
+      "title": "List every open OpenAI job with its salary range",
+      "description": "Every open job on OpenAI's Ashby job board with the salary range, location, team, work type, full description and apply link. About 800 jobs, read live from the board.",
+      "input": {"companies": ["openai"], "includeDetails": true, "maxJobs": 0},
+      "seoTitle": "OpenAI Jobs With Salary Ranges",
+      "seoDescription": "Every open job at OpenAI from its Ashby job board, with the salary range, location, team, full description and apply link. About 800 jobs, read live.",
+      "inputSchemaFields": ["companies", "includeDetails", "maxJobs"],
+      "datasetView": "details"
+    },
+    {
+      "name": "product-designer-jobs-united-states",
+      "title": "Find product designer jobs in the United States",
+      "description": "Product designer jobs at US companies that hire on Ashby, newest first: company, city, remote or onsite, pay range and apply link for each opening.",
+      "input": {"searchTerms": ["product designer"], "location": ["United States"], "maxJobs": 100},
+      "seoTitle": "Product Designer Jobs in the United States",
+      "seoDescription": "Product designer jobs at US startups and tech companies on Ashby, newest first, with the company, city, remote or onsite, pay range and apply link.",
+      "inputSchemaFields": ["searchTerms", "location", "maxJobs"],
+      "datasetView": "jobs"
+    },
+    {
+      "name": "remote-jobs-europe",
+      "title": "Find remote jobs in Europe at startups on Ashby",
+      "description": "Remote jobs open to Europe, the United Kingdom, Germany, France, the Netherlands, Spain, Ireland, Poland, Portugal and Sweden, from the companies that hire on Ashby, newest first, with pay ranges and apply links.",
+      "input": {"workType": ["remote"], "location": ["Europe", "United Kingdom", "Germany", "France", "Netherlands", "Spain", "Ireland", "Poland", "Portugal", "Sweden"], "maxJobs": 100},
+      "seoTitle": "Remote Jobs in Europe at Startups",
+      "seoDescription": "Remote jobs open to Europe, the UK, Germany, France, the Netherlands, Spain and more, from 3,400+ companies on Ashby, newest first, with apply links.",
+      "inputSchemaFields": ["workType", "location", "maxJobs"],
+      "datasetView": "jobs"
+    },
+    {
+      "name": "software-engineering-internships",
+      "title": "Find software engineering internships at startups",
+      "description": "Software engineering internships at the startups and tech companies that hire on Ashby, newest first, with the location, remote or onsite, pay and apply link.",
+      "input": {"searchTerms": ["software engineer", "software engineering", "engineering intern", "software intern"], "employmentType": ["intern"], "maxJobs": 100},
+      "seoTitle": "Software Engineering Internships at Startups",
+      "seoDescription": "Software engineering internships at startups and tech companies on Ashby, newest first, with the location, remote or onsite, pay and apply link.",
+      "inputSchemaFields": ["searchTerms", "employmentType", "maxJobs"],
+      "datasetView": "jobs"
+    },
+    {
+      "name": "sales-account-executive-jobs-london",
+      "title": "Find sales and account executive jobs in London",
+      "description": "Account executive, sales development and other sales jobs at the companies in London that hire on Ashby, newest first, with the pay range and apply link.",
+      "input": {"searchTerms": ["account executive", "sales"], "location": ["London"], "maxJobs": 100},
+      "seoTitle": "Sales and Account Executive Jobs in London",
+      "seoDescription": "Account executive, sales development and other sales jobs at startups in London that hire on Ashby, newest first, with pay ranges and apply links.",
+      "inputSchemaFields": ["searchTerms", "location", "maxJobs"],
+      "datasetView": "jobs"
+    },
+    {
+      "name": "data-scientist-analyst-jobs-with-salaries",
+      "title": "Find data scientist and data analyst jobs with salaries",
+      "description": "Data scientist, data analyst and analytics engineer jobs from the companies that hire on Ashby, with the salary minimum and maximum, currency, location, description and apply link.",
+      "input": {"searchTerms": ["data scientist", "data analyst", "analytics engineer"], "includeDetails": true, "maxJobs": 100},
+      "seoTitle": "Data Scientist and Data Analyst Jobs With Salaries",
+      "seoDescription": "Data scientist, data analyst and analytics engineer jobs from startups on Ashby, with salary minimum and maximum, currency, location and apply link.",
+      "inputSchemaFields": ["searchTerms", "includeDetails", "maxJobs"],
+      "datasetView": "details"
+    },
+    {
+      "name": "check-ashby-job-links",
+      "title": "Check whether Ashby job links are still open",
+      "description": "Paste Ashby job links and see which are still open, closed or gone, with the job's data for the open ones. Use it to clean dead links out of a job board, an ATS export or a spreadsheet.",
+      "input": {"jobUrls": ["https://jobs.ashbyhq.com/openai/2560ed50-5535-42b8-b069-9ebc28ce7493", "https://jobs.ashbyhq.com/ramp/00000000-0000-4000-8000-000000000000"]},
+      "seoTitle": "Check If Ashby Job Links Are Still Open",
+      "seoDescription": "Paste Ashby job links and see which are still open, closed or gone, with the job's data. Clean dead links out of a job board or a spreadsheet.",
+      "inputSchemaFields": ["jobUrls"],
+      "datasetView": "jobs"
+    }
+  ]
+}
