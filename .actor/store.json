@@ -1,8 +1,10 @@
 {
   "$comment": "Listing fields that apify push never sends, applied by scripts/store-metadata.mjs after every deploy. Title, description and categories live in actor.json. The evidence for the name, the price and every listing field: manager/docs/MARKET_CHECK/ats-jobs-dork-search.md (sections 10-11); measurements in the README and CHANGELOG.",
+  "actorId$comment": "Pinned by ID: CI pushes to this ID (actor-id of apify/push-actor-action) and store-metadata.mjs looks it up by ID, so a new name in actor.json renames the same actor instead of creating a second one (created by the first CI push, run 36752717938, 2026-09-30).",
+  "actorId": "QzMfW9AHG9SBNkJOE",
   "seoTitle": "Ashby Jobs Scraper - Search Every Ashby Job Board",
   "seoDescription": "Search every Ashby job board at once: titles, locations, remote or hybrid, salaries and posting dates. Newest jobs first, read live, no login or API key.",
-  "exampleRunInput$comment": "Equal to the INPUT_SCHEMA prefill, so it is also the input of Apify's daily QA run (must succeed with rows within 5 minutes). Local run 2026-09-30: 3,814 boards read, 1,389 with a matching title, 362 software engineer jobs posted in the last 7 days, the 20 newest saved, 91 s.",
+  "exampleRunInput$comment": "Equal to the INPUT_SCHEMA prefill, so it is also the input of Apify's daily QA run (must succeed with rows within 5 minutes). On Apify, build 1.0.1, 1024 MB, 2026-09-30 (run rfAszSyqKnlKplTRQ): 3,814 boards read, 1,389 with a matching title, 359 software engineer jobs posted in the last 7 days at 182 companies, the 20 newest saved, 103 s, $0.0039 of platform usage.",
   "exampleRunInput": {
     "searchTerms": [
       "software engineer"
@@ -13,15 +15,15 @@
   "actorPermissionLevel": "LIMITED_PERMISSIONS",
   "isPublic$comment": "Private until the platform tests pass (ci/README.md step 5).",
   "isPublic": false,
-  "defaultRunOptions$comment": "1024 MB: local runs peaked at 293-324 MB (the worst case, every job on Ashby, 146 s). Apify gives CPU in proportion to memory, so the platform runs decide whether 2048 MB is cheaper overall. 1800 s: the worst case read every board in under 3 minutes locally.",
+  "defaultRunOptions$comment": "1024 MB, measured on Apify 2026-09-30 (build 1.0.1): the example input took 103 s, 0.029 CU, peak 184 MB (run rfAszSyqKnlKplTRQ); the worst case, an empty form that reads the full job list of every hiring board, took 143 s, 0.040 CU, peak 254 MB, $0.0071 (run 4fJPD8VvbNzVUQ0cZ). CPU averaged 22-24% of a core, so a larger memory buys little speed for more compute. 1800 s leaves a wide margin over the 143 s worst case.",
   "defaultRunOptions": {
     "build": "latest",
     "memoryMbytes": 1024,
     "timeoutSecs": 1800
   },
   "pricing": {
-    "apply": false,
-    "$comment": "NOT APPLIED on the first deploy: the platform runs first measure what a run costs (the fixed cost is reading about 3,800 boards whatever the result), then the final events are set once. MAIN COMPETITOR for Ashby jobs: bovi/greenhouse-lever-ashby-job-scraper, 107 users in 30 days on 2026-09-30, $0.0015 per job (FREE) and $0.001485 (BRONZE), descriptions optional at the same price; next fantastic-jobs/ashby-jobs-api 81 users at $0.002. PLAN: job $0.0012 (a row without the description, 20% under bovi's full row), job-details $0.00135 (10% under bovi with descriptions). Where others are cheaper: jobo.world $0.00099, blackfalcondata $0.00095 + $0.005 start, webdata_labs $0.001, johnvc $0.0005 + $0.0002 per description, bujhmml $0.0004.",
+    "apply": true,
+    "$comment": "SET 2026-09-30 under the owner rule (a little below the main competitor on the same job, extreme margin). MAIN COMPETITOR for Ashby jobs: bovi/greenhouse-lever-ashby-job-scraper, 107 users in 30 days on 2026-09-30, $0.0015 per job (FREE) and $0.001485 (BRONZE), descriptions optional at the same price, $0.00005 start; next fantastic-jobs/ashby-jobs-api 81 users at $0.002. job $0.0012 is 20% under bovi for a row without the description; job-details $0.00135 is 10% under bovi with descriptions. Flat, not tiered: apify SDK 3.4.1 needs eventPriceUsd on every event (the maigret note). WHERE OTHERS ARE CHEAPER: jobo.world $0.00099, blackfalcondata $0.00095 + $0.005 start, webdata_labs $0.001, johnvc $0.0005 + $0.0002 per description, bujhmml $0.0004. COST AND MARGIN (measured on Apify, build 1.0.1, 1024 MB, 2026-09-30): a run's cost is fixed by the boards it reads, not by the rows: $0.0039 for the example (20 rows) and $0.0071 for the worst case (every hiring board); dataset writes add about $0.005 per 1,000 rows. Developer share 0.8 x $0.0012 = $0.00096 a row, so 20 rows earn $0.0192 against $0.0039 (4.9x), the default 100 rows $0.096 against at most $0.0071 (13x), and every job on Ashby (about 60,000 rows) $57.60 against about $0.31. A run under about 8 rows loses up to $0.007: accepted, no start fee. Free-plan users bring $0 and Apify covers their platform cost. The owner's own runs are billed platform usage only. REVENUE: $1,000 a month needs about 1.04 million paid-plan rows, about 35,000 a day. Do not add apify-default-dataset-item (it would charge every row twice). The event names must equal LINK_EVENT and DETAILS_EVENT in src/main.py.",
     "pricingInfos": [
       {
         "pricingModel": "PAY_PER_EVENT",

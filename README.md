@@ -140,12 +140,12 @@ The run summary is the OUTPUT record: boards read, boards and companies with a m
 
 ## How fast is it?
 
-Measured on 2026-09-30 from outside Apify, with the default settings:
+Measured on Apify on 2026-09-30 (build 1.0.1) with the default settings (1024 MB of memory, 32 boards read at once):
 
-- **The example input** (every board, a title, last 7 days): 91 seconds. The first pass reads 3,814 board pages; the second reads the full job list only of the 1,389 boards whose titles could match.
-- **Every open job on Ashby** (empty form): 146 seconds for 59,650 jobs at 3,464 companies, 1,280 duplicate postings left out.
+- **The example input** (every board, a title, last 7 days): 103 seconds. The first pass reads the 3,814 board pages; the second reads the full job list only of the 1,389 boards whose titles could match. Peak memory 184 MB.
+- **Every open job on Ashby** (an empty form, the worst case): 143 seconds for 59,641 jobs at 3,464 companies, 1,282 duplicate postings left out. Peak memory 254 MB.
 - **A few named companies**: about a second.
-- Peak memory under 330 MB.
+- No board refused or failed in either run. CPU stayed near a quarter of a core, so more memory buys little speed.
 
 ## Common questions
 
@@ -175,7 +175,7 @@ Save the input as a task with Posted in the last set to 24 hours and schedule it
 
 ### Can I get every job on Ashby?
 
-Yes: leave the search empty and set Number of jobs to 0. About 60,000 rows, in under three minutes in the test above.
+Yes: leave the search empty and set Number of jobs to 0. About 60,000 rows, in under three minutes (143 seconds in the test above).
 
 ### Does it need a login, an API key or a proxy?
 

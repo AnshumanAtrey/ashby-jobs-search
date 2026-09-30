@@ -76,10 +76,10 @@ Typical run (20 jobs): $0.024. 1,000 jobs: $1.20. Every open job on Ashby (about
 - johnvc/ashby-job-board-scraper: $0.50 plus $0.20 per 1,000 descriptions
 - blackfalcondata/greenhouse-scraper: $0.95 plus $0.005 a run
 
-## Verified performance (2026-09-30, measured outside Apify)
+## Verified performance (Apify, build 1.0.1, 1024 MB, 2026-09-30)
 
-- Example input: 3,814 boards read, 362 matching jobs, 20 saved, 91 s.
-- Every open job on Ashby: 59,650 jobs at 3,464 companies in 146 s, peak memory under 330 MB.
+- Example input: 3,814 boards read, 359 matching jobs at 182 companies, 20 saved, 103 s, peak memory 184 MB.
+- Every open job on Ashby (empty form): 59,641 jobs at 3,464 companies in 143 s, peak memory 254 MB.
 
 ## Documentation
 
