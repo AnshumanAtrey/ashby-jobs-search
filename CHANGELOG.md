@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0] - 2026-10-01 (listing)
+
+- Logo: the Ashby wordmark with JOBS on Ashby purple (option 6 in manager/rules/logos/ashby-jobs-search/).
+- Description names the site:jobs.ashbyhq.com Google dork, so Store search finds the actor for it (the README body is not searched).
+
 ## [1.0] - 2026-09-30
 
 First release: every company's Ashby job board searched live, in one run.

@@ -2,7 +2,7 @@
     "actorSpecification": 1,
     "name": "ashby-jobs-search",
     "title": "Ashby Jobs Scraper & API - All Companies, Remote, Last 24 Hours",
-    "description": "Ashby jobs scraper and API for every company on jobs.ashbyhq.com, searched live by job title, location, remote or onsite and posting date, newest first. 3,478 hiring companies, 61,000+ open jobs. Add full descriptions and salaries, or paste job links to check if they are still open.",
+    "description": "Ashby jobs scraper and API for every company on jobs.ashbyhq.com, searched live by job title, location, remote or onsite and posting date, newest first. 3,478 hiring companies, 61,000+ open jobs. The site:jobs.ashbyhq.com Google dork done at the source: full details, salaries, dead-link checks.",
     "version": "1.0",
     "buildTag": "latest",
     "categories": [
