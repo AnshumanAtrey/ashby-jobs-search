@@ -32,7 +32,7 @@
             "title": "Remote or onsite (workType)",
             "type": "array",
             "editor": "select",
-            "description": "Pick remote, hybrid or onsite (in the office), or several. Each job's own Ashby work type is used, and a job without one counts as remote when its location says Remote. Leave it empty for every work type. The API also accepts everyday words such as wfh, in office or offline.",
+            "description": "Pick remote, hybrid or onsite (in the office), or several. Each job's own Ashby work type is used, and a job without one counts as remote when its location says Remote. Leave it empty for every work type. Words such as Remote, WFH or offline typed in Where the job is work too.",
             "items": {
                 "type": "string",
                 "enum": [
@@ -106,7 +106,7 @@
             "title": "Job type (employmentType)",
             "type": "array",
             "editor": "select",
-            "description": "Pick the job type: full-time, part-time, contract, intern or temporary, or several, as each company set it on Ashby. Leave it empty for every job type. The API also accepts words such as internship, freelance or temp.",
+            "description": "Pick the job type: full-time, part-time, contract, intern or temporary, or several, as each company set it on Ashby. Leave it empty for every job type.",
             "items": {
                 "type": "string",
                 "enum": [

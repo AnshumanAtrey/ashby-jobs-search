@@ -13,8 +13,8 @@
     "maxJobs": 20
   },
   "actorPermissionLevel": "LIMITED_PERMISSIONS",
-  "isPublic$comment": "Private until the platform tests pass (ci/README.md step 5).",
-  "isPublic": false,
+  "isPublic$comment": "Published 2026-09-30 after the platform tests on build 1.0.2 (1024 MB): the example input (20 rows, 20 job charges, run ZlJMB6yat2T8vZX4Z), details with filters (5 rows, 5 job-details charges, k1wCe7wEArWthb6S8), a pasted board link (5, jPowPHbbvcBWeXCtT), company names with a country name and offline typed as a place (3, nbj2OUUtkx046z7nb), an unreadable company (FAILED at $0 with the plain message, srVrwHXYhl1Fvqjbm), a $0.005 spending limit (4 rows, 4 charges, stopped with the limit note, xPxJGwSjukVIVWACo) and the link checker (open, closed, not found: 3 rows, 3 charges, oKLcKclbMLmgZR7jQ). Invalid dropdown values (workType underwater) are refused by the platform before the run starts, at $0. On the owner's account a spending limit also counts platform usage: a full scan with a $0.005 limit was aborted at $0.0085 of usage with 0 rows (UsMuy7ylzg5HBpKTb); users on pay per event are limited by event charges only. A paid public actor cannot be made private again until monetization is cancelled in Console.",
+  "isPublic": true,
   "defaultRunOptions$comment": "1024 MB, measured on Apify 2026-09-30 (build 1.0.1): the example input took 103 s, 0.029 CU, peak 184 MB (run rfAszSyqKnlKplTRQ); the worst case, an empty form that reads the full job list of every hiring board, took 143 s, 0.040 CU, peak 254 MB, $0.0071 (run 4fJPD8VvbNzVUQ0cZ). CPU averaged 22-24% of a core, so a larger memory buys little speed for more compute. 1800 s leaves a wide margin over the 143 s worst case.",
   "defaultRunOptions": {
     "build": "latest",

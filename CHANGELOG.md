@@ -17,7 +17,8 @@ First release: every company's Ashby job board searched live, in one run.
   region, country and country code.
 - Job link checker (`jobUrls`): each link comes back open, closed or not found.
 - Input read as people type it: commas split, a pasted Google dork (site:jobs.ashbyhq.com intext:frontend)
-  reads as its keyword and board, board and job links in the search box, everyday words for work and job
-  types ("offline" is onsite), "Remote" typed as a place, periods such as 24h or 2 weeks. Unreadable entries
-  are skipped with a plain note; a form with nothing readable fails at $0.
+  reads as its keyword and board, board and job links in the search box, work types typed as a place
+  ("Remote", "offline" is onsite), company names, periods such as 24h or 2 weeks. Unreadable entries are
+  skipped with a plain note; a form with nothing readable fails at $0, and so does a spending limit too low
+  for one row.
 - Pay per event: `job` per row, `job-details` per row with details, no start fee.

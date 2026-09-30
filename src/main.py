@@ -372,7 +372,7 @@ class Run:
             first = self.board_errors[0]['error'] if self.board_errors else 'no board could be read'
             text = f'No Ashby board could be read: {first}.'
         else:
-            where = f'{self.boards_read:,} Ashby boards'
+            where = plural(self.boards_read, 'Ashby board')
             if self.delivery.rows:
                 newest = ('' if cfg.max_jobs is None or self.matching <= self.delivery.rows
                           else f', saved the {self.delivery.rows:,} newest')
@@ -456,6 +456,13 @@ async def main() -> None:
             Actor.log.warning(f'Skipped "{text}": {why}')
         run = Run(cfg, companies, updated, delivery)
         await run.write_output(final=False)
+        first_event = DETAILS_EVENT if cfg.include_details and not cfg.job_urls else LINK_EVENT
+        if not delivery.can_pay(first_event):
+            message = ('The spending limit of this run is too low for one row, so nothing was searched. '
+                       'Raise the maximum cost per run and start again.')
+            await Actor.set_value('OUTPUT', {'status': 'failed', 'message': message})
+            await Actor.fail(status_message=message)
+            return
         if cfg.job_urls:
             await run.check_links()
         else:
