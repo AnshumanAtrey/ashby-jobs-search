@@ -1,0 +1,463 @@
+{
+    "actorSpecification": 1,
+    "name": "ashby-jobs-search",
+    "title": "Ashby Jobs Scraper & API - All Companies, Remote, Last 24 Hours",
+    "description": "Ashby jobs scraper and API for every company on jobs.ashbyhq.com, searched live by job title, location, remote or onsite and posting date, newest first. 3,478 hiring companies, 61,000+ open jobs. Add full descriptions and salaries, or paste job links to check if they are still open.",
+    "version": "1.0",
+    "buildTag": "latest",
+    "categories": [
+        "JOBS",
+        "LEAD_GENERATION",
+        "OPEN_SOURCE"
+    ],
+    "input": "./INPUT_SCHEMA.json",
+    "output": "./output_schema.json",
+    "dockerfile": "../Dockerfile",
+    "readme": "../README.md",
+    "minMemoryMbytes": 512,
+    "maxMemoryMbytes": 4096,
+    "storages": {
+        "dataset": {
+            "actorSpecification": 1,
+            "title": "Jobs found",
+            "description": "One row per job, newest first: title, company, locations, work type, job type, pay, posting date and links; with details on, also the description, salary numbers and address. The run summary is the OUTPUT record, not a row.",
+            "fields": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "title": "Job title (title)",
+                        "description": "The job title as the company wrote it on Ashby.",
+                        "example": "Senior Frontend Engineer"
+                    },
+                    "company": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "title": "Company name (company)",
+                        "description": "The company's name on its Ashby job board.",
+                        "example": "Ramp"
+                    },
+                    "location": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "title": "Main location (location)",
+                        "description": "The job's main location as the company wrote it, such as New York, NY or Remote (US).",
+                        "example": "New York, NY (HQ)"
+                    },
+                    "otherLocations": {
+                        "type": [
+                            "array",
+                            "null"
+                        ],
+                        "title": "Other locations (otherLocations)",
+                        "description": "Every other location the job is open in.",
+                        "example": [
+                            "Remote (Canada)",
+                            "Miami, FL"
+                        ],
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "workType": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "title": "Remote or onsite (workType)",
+                        "description": "remote, hybrid or onsite, from the job's Ashby work type (a job without one is remote when its location says Remote). Empty when Ashby has none.",
+                        "example": "hybrid"
+                    },
+                    "employmentType": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "title": "Job type (employmentType)",
+                        "description": "full-time, part-time, contract, intern or temporary, as the company set it.",
+                        "example": "full-time"
+                    },
+                    "department": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "title": "Hiring department (department)",
+                        "description": "The department the job is in.",
+                        "example": "Engineering"
+                    },
+                    "team": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "title": "Hiring team (team)",
+                        "description": "The team the job is in.",
+                        "example": "Backend"
+                    },
+                    "salary": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "title": "Pay summary (salary)",
+                        "description": "The pay range the company publishes, as Ashby shows it, often with equity. Empty when the company shows no pay.",
+                        "example": "$211.4K - $290.6K - Offers Equity"
+                    },
+                    "postedAt": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "title": "Posted on (postedAt)",
+                        "description": "When the job was published on Ashby, in UTC.",
+                        "example": "2026-09-30T17:12:16.713+00:00"
+                    },
+                    "jobUrl": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "title": "Job link (jobUrl)",
+                        "description": "The job's page on the company's Ashby board.",
+                        "example": "https://jobs.ashbyhq.com/ramp/34413f8d-26bf-4bbc-8ade-eb309a0e2245"
+                    },
+                    "applyUrl": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "title": "Apply link (applyUrl)",
+                        "description": "The page where a candidate applies.",
+                        "example": "https://jobs.ashbyhq.com/ramp/34413f8d-26bf-4bbc-8ade-eb309a0e2245/application"
+                    },
+                    "status": {
+                        "type": "string",
+                        "title": "Still open? (status)",
+                        "description": "open for every search result (read live from the board during the run). For a checked link: open, closed (no longer on the board) or not found (no such Ashby board).",
+                        "example": "open"
+                    },
+                    "companySlug": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "title": "Ashby board name (companySlug)",
+                        "description": "The name of the company's board in jobs.ashbyhq.com links. Put it in companies to search only this company.",
+                        "example": "ramp"
+                    },
+                    "companyWebsite": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "title": "Company website (companyWebsite)",
+                        "description": "The website the company gives on its Ashby board.",
+                        "example": "https://ramp.com"
+                    },
+                    "jobId": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "title": "Job ID (jobId)",
+                        "description": "Ashby's ID of the job, the last part of the job link.",
+                        "example": "34413f8d-26bf-4bbc-8ade-eb309a0e2245"
+                    },
+                    "checkedAt": {
+                        "type": "string",
+                        "title": "Checked at (checkedAt)",
+                        "description": "When the run read the boards, in UTC.",
+                        "example": "2026-09-30T17:18:12+00:00"
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "title": "Job description (description)",
+                        "description": "With details on: the full job description as plain text.",
+                        "example": "About Ramp. Ramp is building the smart infrastructure for finance teams..."
+                    },
+                    "descriptionHtml": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "title": "Description as HTML (descriptionHtml)",
+                        "description": "With details on: the full job description as the company formatted it, in HTML.",
+                        "example": "<h1><strong>About Ramp</strong></h1><p>Ramp is building...</p>"
+                    },
+                    "salaryMin": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "title": "Lowest pay (salaryMin)",
+                        "description": "With details on: the bottom of the published salary range, as a number.",
+                        "example": 211400
+                    },
+                    "salaryMax": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "title": "Highest pay (salaryMax)",
+                        "description": "With details on: the top of the published salary range, as a number.",
+                        "example": 290600
+                    },
+                    "salaryCurrency": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "title": "Pay currency (salaryCurrency)",
+                        "description": "With details on: the currency code of the salary range.",
+                        "example": "USD"
+                    },
+                    "salaryPeriod": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "title": "Pay per (salaryPeriod)",
+                        "description": "With details on: year, month, week, day or hour, the period the salary range is for.",
+                        "example": "year"
+                    },
+                    "offersEquity": {
+                        "type": [
+                            "boolean",
+                            "null"
+                        ],
+                        "title": "Offers equity? (offersEquity)",
+                        "description": "With details on: true when the published pay includes equity. Empty when the company publishes no pay.",
+                        "example": true
+                    },
+                    "city": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "title": "Job city (city)",
+                        "description": "With details on: the city of the job's main address.",
+                        "example": "New York City"
+                    },
+                    "region": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "title": "State or region (region)",
+                        "description": "With details on: the state or region of the job's main address.",
+                        "example": "NY"
+                    },
+                    "country": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "title": "Job country (country)",
+                        "description": "With details on: the country of the job's main address, as the company wrote it.",
+                        "example": "USA"
+                    },
+                    "countryCode": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "title": "Country code (countryCode)",
+                        "description": "With details on: the two-letter code of that country.",
+                        "example": "US"
+                    }
+                }
+            },
+            "views": {
+                "jobs": {
+                    "title": "Jobs",
+                    "description": "One row per job: what it is, where, remote or not, pay and when it was posted, with its links.",
+                    "transformation": {
+                        "fields": [
+                            "title",
+                            "company",
+                            "location",
+                            "workType",
+                            "employmentType",
+                            "salary",
+                            "postedAt",
+                            "jobUrl",
+                            "status"
+                        ]
+                    },
+                    "display": {
+                        "component": "table",
+                        "properties": {
+                            "title": {
+                                "label": "Job title (title)",
+                                "format": "text"
+                            },
+                            "company": {
+                                "label": "Company name (company)",
+                                "format": "text"
+                            },
+                            "location": {
+                                "label": "Main location (location)",
+                                "format": "text"
+                            },
+                            "workType": {
+                                "label": "Remote or onsite (workType)",
+                                "format": "text"
+                            },
+                            "employmentType": {
+                                "label": "Job type (employmentType)",
+                                "format": "text"
+                            },
+                            "salary": {
+                                "label": "Pay summary (salary)",
+                                "format": "text"
+                            },
+                            "postedAt": {
+                                "label": "Posted on (postedAt)",
+                                "format": "date"
+                            },
+                            "jobUrl": {
+                                "label": "Job link (jobUrl)",
+                                "format": "link"
+                            },
+                            "status": {
+                                "label": "Still open? (status)",
+                                "format": "text"
+                            }
+                        }
+                    }
+                },
+                "details": {
+                    "title": "Details",
+                    "description": "The description, salary numbers, address and every other field of each job.",
+                    "transformation": {
+                        "fields": [
+                            "title",
+                            "company",
+                            "description",
+                            "salaryMin",
+                            "salaryMax",
+                            "salaryCurrency",
+                            "salaryPeriod",
+                            "offersEquity",
+                            "city",
+                            "region",
+                            "countryCode",
+                            "otherLocations",
+                            "department",
+                            "team",
+                            "applyUrl",
+                            "companyWebsite",
+                            "companySlug",
+                            "jobId",
+                            "checkedAt"
+                        ]
+                    },
+                    "display": {
+                        "component": "table",
+                        "properties": {
+                            "title": {
+                                "label": "Job title (title)",
+                                "format": "text"
+                            },
+                            "company": {
+                                "label": "Company name (company)",
+                                "format": "text"
+                            },
+                            "description": {
+                                "label": "Job description (description)",
+                                "format": "text"
+                            },
+                            "salaryMin": {
+                                "label": "Lowest pay (salaryMin)",
+                                "format": "number"
+                            },
+                            "salaryMax": {
+                                "label": "Highest pay (salaryMax)",
+                                "format": "number"
+                            },
+                            "salaryCurrency": {
+                                "label": "Pay currency (salaryCurrency)",
+                                "format": "text"
+                            },
+                            "salaryPeriod": {
+                                "label": "Pay per (salaryPeriod)",
+                                "format": "text"
+                            },
+                            "offersEquity": {
+                                "label": "Offers equity? (offersEquity)",
+                                "format": "boolean"
+                            },
+                            "city": {
+                                "label": "Job city (city)",
+                                "format": "text"
+                            },
+                            "region": {
+                                "label": "State or region (region)",
+                                "format": "text"
+                            },
+                            "countryCode": {
+                                "label": "Country code (countryCode)",
+                                "format": "text"
+                            },
+                            "otherLocations": {
+                                "label": "Other locations (otherLocations)",
+                                "format": "array"
+                            },
+                            "department": {
+                                "label": "Hiring department (department)",
+                                "format": "text"
+                            },
+                            "team": {
+                                "label": "Hiring team (team)",
+                                "format": "text"
+                            },
+                            "applyUrl": {
+                                "label": "Apply link (applyUrl)",
+                                "format": "link"
+                            },
+                            "companyWebsite": {
+                                "label": "Company website (companyWebsite)",
+                                "format": "link"
+                            },
+                            "companySlug": {
+                                "label": "Ashby board name (companySlug)",
+                                "format": "text"
+                            },
+                            "jobId": {
+                                "label": "Job ID (jobId)",
+                                "format": "text"
+                            },
+                            "checkedAt": {
+                                "label": "Checked at (checkedAt)",
+                                "format": "date"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "keyValueStore": {
+            "actorKeyValueStoreSchemaVersion": 1,
+            "title": "Run summary",
+            "description": "The OUTPUT record: how many boards were read and matched, how many jobs matched and were saved, the checked links, the notes about how the input was read and the settings used.",
+            "collections": {
+                "summary": {
+                    "title": "Run summary (OUTPUT)",
+                    "description": "Status, message, counts for the boards and jobs, checked links, notes and settings.",
+                    "key": "OUTPUT"
+                }
+            }
+        }
+    }
+}

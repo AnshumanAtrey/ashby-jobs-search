@@ -1,0 +1,48 @@
+{
+  "$comment": "Listing fields that apify push never sends, applied by scripts/store-metadata.mjs after every deploy. Title, description and categories live in actor.json. The evidence for the name, the price and every listing field: manager/docs/MARKET_CHECK/ats-jobs-dork-search.md (sections 10-11); measurements in the README and CHANGELOG.",
+  "seoTitle": "Ashby Jobs Scraper - Search Every Ashby Job Board",
+  "seoDescription": "Search every Ashby job board at once: titles, locations, remote or hybrid, salaries and posting dates. Newest jobs first, read live, no login or API key.",
+  "exampleRunInput$comment": "Equal to the INPUT_SCHEMA prefill, so it is also the input of Apify's daily QA run (must succeed with rows within 5 minutes). Local run 2026-09-30: 3,814 boards read, 1,389 with a matching title, 362 software engineer jobs posted in the last 7 days, the 20 newest saved, 91 s.",
+  "exampleRunInput": {
+    "searchTerms": [
+      "software engineer"
+    ],
+    "postedWithin": "7 days",
+    "maxJobs": 20
+  },
+  "actorPermissionLevel": "LIMITED_PERMISSIONS",
+  "isPublic$comment": "Private until the platform tests pass (ci/README.md step 5).",
+  "isPublic": false,
+  "defaultRunOptions$comment": "1024 MB: local runs peaked at 293-324 MB (the worst case, every job on Ashby, 146 s). Apify gives CPU in proportion to memory, so the platform runs decide whether 2048 MB is cheaper overall. 1800 s: the worst case read every board in under 3 minutes locally.",
+  "defaultRunOptions": {
+    "build": "latest",
+    "memoryMbytes": 1024,
+    "timeoutSecs": 1800
+  },
+  "pricing": {
+    "apply": false,
+    "$comment": "NOT APPLIED on the first deploy: the platform runs first measure what a run costs (the fixed cost is reading about 3,800 boards whatever the result), then the final events are set once. MAIN COMPETITOR for Ashby jobs: bovi/greenhouse-lever-ashby-job-scraper, 107 users in 30 days on 2026-09-30, $0.0015 per job (FREE) and $0.001485 (BRONZE), descriptions optional at the same price; next fantastic-jobs/ashby-jobs-api 81 users at $0.002. PLAN: job $0.0012 (a row without the description, 20% under bovi's full row), job-details $0.00135 (10% under bovi with descriptions). Where others are cheaper: jobo.world $0.00099, blackfalcondata $0.00095 + $0.005 start, webdata_labs $0.001, johnvc $0.0005 + $0.0002 per description, bujhmml $0.0004.",
+    "pricingInfos": [
+      {
+        "pricingModel": "PAY_PER_EVENT",
+        "apifyMarginPercentage": 0.2,
+        "reasonForChange": "First pricing for 1.0: $1.20 per 1,000 jobs, $1.35 per 1,000 with full details, below the main Ashby jobs actor's $1.50. A run that fails on its input costs $0.",
+        "pricingPerEvent": {
+          "actorChargeEvents": {
+            "job": {
+              "eventTitle": "Job",
+              "eventDescription": "One saved job row: title, company, locations, work type, job type, department, pay summary, posting date, job and apply links. Also one checked job link that is closed or on no Ashby board.",
+              "eventPriceUsd": 0.0012,
+              "isPrimaryEvent": true
+            },
+            "job-details": {
+              "eventTitle": "Job with details",
+              "eventDescription": "One saved job row with full details on: everything in a Job row plus the full description (text and HTML), salary numbers, equity and the job's city, region and country.",
+              "eventPriceUsd": 0.00135
+            }
+          }
+        }
+      }
+    ]
+  }
+}

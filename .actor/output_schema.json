@@ -1,0 +1,20 @@
+{
+    "actorOutputSchemaVersion": 1,
+    "title": "Ashby Jobs Search output",
+    "description": "The jobs found, one row per job in the default dataset (switch between the Jobs and Details views), plus a run summary record.",
+    "type": "object",
+    "properties": {
+        "jobs": {
+            "type": "string",
+            "title": "Jobs found (jobs)",
+            "description": "Every saved job, newest first: title, company, locations, work type, job type, pay, posting date, job and apply links, and with details on the description, salary numbers and address. Export as JSON, CSV or Excel.",
+            "template": "{{links.apiDefaultDatasetUrl}}/items"
+        },
+        "summary": {
+            "type": "string",
+            "title": "Run summary (summary)",
+            "description": "The OUTPUT record in the default key-value store: boards read, boards and companies with a match, jobs matched and saved, checked links, notes about how the input was read, and the settings used.",
+            "template": "{{links.apiDefaultKeyValueStoreUrl}}/records/OUTPUT"
+        }
+    }
+}

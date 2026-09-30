@@ -1,0 +1,3 @@
+apify>=3.4,<4  # pinned: SDK 4.0 made push_data's charging argument keyword-only (holehe outage 2026-09-12); the portfolio runs 3.4.x
+httpx==0.28.1  # async HTTP for the board pages and the posting API
+pycountry==26.2.16  # country names and codes for the location filter
