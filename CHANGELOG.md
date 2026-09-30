@@ -14,6 +14,8 @@ One keyword and Start is the whole job (owner rule): nothing is prefilled but th
   defaults with a note; a negative job count means 100; a spending limit too low for one job ends the run at $0
   without an error.
 
+- Every field is `nullable`: an API call or agent that sends null gets the field's default instead of a refusal.
+
 ### Added
 - Ten published example tasks (`.actor/tasks.json`, published by `scripts/publish-tasks.mjs` in CI).
 

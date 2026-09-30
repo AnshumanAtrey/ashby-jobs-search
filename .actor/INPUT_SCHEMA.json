@@ -13,7 +13,8 @@
             "example": [
                 "software engineer"
             ],
-            "default": []
+            "default": [],
+            "nullable": true
         },
         "location": {
             "title": "Where the job is (location)",
@@ -24,7 +25,8 @@
             "example": [
                 "United States"
             ],
-            "default": []
+            "default": [],
+            "nullable": true
         },
         "workType": {
             "title": "Remote or onsite (workType)",
@@ -47,7 +49,8 @@
             "example": [
                 "remote"
             ],
-            "default": []
+            "default": [],
+            "nullable": true
         },
         "postedWithin": {
             "title": "Posted in the last (postedWithin)",
@@ -69,7 +72,8 @@
                 "any time"
             ],
             "example": "24 hours",
-            "default": "any time"
+            "default": "any time",
+            "nullable": true
         },
         "maxJobs": {
             "title": "Number of jobs (maxJobs)",
@@ -80,14 +84,16 @@
             "prefill": 100,
             "example": 100,
             "default": 100,
-            "sectionCaption": "How many and how much"
+            "sectionCaption": "How many and how much",
+            "nullable": true
         },
         "includeDetails": {
             "title": "Full details (includeDetails)",
             "type": "boolean",
             "editor": "checkbox",
             "description": "Tick to add the full details of each job: the description, the salary numbers (lowest, highest, currency, per year or hour), equity, and the city, region and country. A job with details costs $1.35 per 1,000 instead of $1.20.",
-            "default": false
+            "default": false,
+            "nullable": true
         },
         "excludeTerms": {
             "title": "Leave out words (excludeTerms)",
@@ -99,7 +105,8 @@
                 "senior"
             ],
             "default": [],
-            "sectionCaption": "Narrow the search"
+            "sectionCaption": "Narrow the search",
+            "nullable": true
         },
         "employmentType": {
             "title": "Job type (employmentType)",
@@ -126,14 +133,16 @@
             "example": [
                 "full-time"
             ],
-            "default": []
+            "default": [],
+            "nullable": true
         },
         "searchDescriptions": {
             "title": "Match descriptions (searchDescriptions)",
             "type": "boolean",
             "editor": "checkbox",
             "description": "Tick to match your keywords in the job description too, not only in the title: python then finds every job that asks for Python. A run takes about two minutes longer.",
-            "default": false
+            "default": false,
+            "nullable": true
         },
         "companies": {
             "title": "Only these companies (companies)",
@@ -144,7 +153,8 @@
             "example": [
                 "openai"
             ],
-            "default": []
+            "default": [],
+            "nullable": true
         },
         "jobUrls": {
             "title": "Job links to check (jobUrls)",
@@ -156,7 +166,8 @@
                 "https://jobs.ashbyhq.com/ramp/34413f8d-26bf-4bbc-8ade-eb309a0e2245"
             ],
             "default": [],
-            "sectionCaption": "Check job links"
+            "sectionCaption": "Check job links",
+            "nullable": true
         }
     }
 }
