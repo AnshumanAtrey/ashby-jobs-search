@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.2] - 2026-10-08: regions and worldwide in the location filter
+## [1.1] - 2026-10-08: regions and worldwide in the location filter
 
 A user searched remote software engineer jobs in Worldwide, Anywhere, EMEA, Africa and Kenya and got none,
 while "Greece (Remote)" and a plain "Remote" job were open to them: places matched only a country or the
