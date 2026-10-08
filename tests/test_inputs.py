@@ -60,6 +60,20 @@ class Places(unittest.TestCase):
         self.assertEqual((cfg.locations, cfg.work_types), (['United States'], ['remote']))
         self.assertIn('remote work type', cfg.notes[0])
 
+    def test_worldwide_words_stay_places(self):
+        cfg = parse({'location': ['Worldwide', 'Anywhere', 'EMEA', 'Africa', 'Kenya'], 'workType': ['remote']})
+        self.assertEqual((cfg.locations, cfg.work_types), (['Worldwide', 'Anywhere', 'EMEA', 'Africa', 'Kenya'], ['remote']))
+        self.assertIn('open worldwide', cfg.notes[0])
+        self.assertTrue(any('EMEA' in n and 'region of 129 countries' in n for n in cfg.notes), cfg.notes)
+
+    def test_remote_and_a_place_in_one_entry(self):
+        cfg = parse({'location': 'Remote EMEA'})
+        self.assertEqual((cfg.locations, cfg.work_types), (['EMEA'], ['remote']))
+        cfg = parse({'location': ['Remote - US', 'Remote (Germany)']})
+        self.assertEqual((cfg.locations, cfg.work_types), (['US', 'Germany'], ['remote']))
+        cfg = parse({'location': 'Remote 100%'})
+        self.assertEqual((cfg.locations, cfg.work_types), ([], ['remote']))
+
     def test_offline_means_onsite(self):
         cfg = parse({'workType': ['offline']})
         self.assertEqual(cfg.work_types, ['onsite'])

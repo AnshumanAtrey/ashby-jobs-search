@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.2] - 2026-10-08: regions and worldwide in the location filter
+
+A user searched remote software engineer jobs in Worldwide, Anywhere, EMEA, Africa and Kenya and got none,
+while "Greece (Remote)" and a plain "Remote" job were open to them: places matched only a country or the
+literal words of a location. Measured on 8,498 live jobs from 553 boards, that search now finds 46 jobs
+where it found 9, and no location search finds fewer jobs than before.
+
+### Changed
+- **Regions are places.** EMEA, Europe, EU, EEA, LatAm, South and Central America, the Caribbean, North
+  America, the Americas, APAC, Asia, the Middle East, MENA, GCC, Africa and its parts, Oceania, ANZ, DACH,
+  the Nordics, Benelux, the Baltics, UK&I, Iberia and CEE each stand for their countries (UN M49 regions,
+  src/places.py). A region finds jobs in its countries ("EMEA" finds "Greece (Remote)"), jobs posted for a
+  region inside it or covering at least half of it ("Europe" finds "Remote - EMEA", "DACH" finds
+  "Remote - EU"), and jobs marked worldwide. A country finds the regions that hold it ("Kenya" finds
+  "Remote - EMEA").
+- **Worldwide is a place.** Worldwide, Anywhere, Global and Remote worldwide find jobs marked worldwide,
+  global or anywhere, and plain "Remote" jobs with no country in their address. "Anywhere" used to be read
+  as the remote work type and dropped from the places.
+- Countries in brackets narrow a region: "Americas (USA or Canada)" is the US and Canada, not Brazil.
+  "South Africa" is a country, not the region Africa, and "Atlanta, Georgia" with a US address is the state.
+- "Remote EMEA", "Remote - US" or "Remote (Germany)" typed as one location reads as the remote work type in
+  that place. The run notes say how each region and worldwide entry was read.
+
 ## [1.1] - 2026-10-01
 
 One keyword and Start is the whole job (owner rule): nothing is prefilled but the job count, and no input stops a run.

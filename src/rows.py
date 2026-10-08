@@ -7,13 +7,21 @@ sign), an s plural is folded, and two neighbouring words also count joined, so f
 front-end match each other while java does not match JavaScript. Descriptions, when searched, must hold
 the term as a phrase.
 
-Places match by country code or by the place's words inside a location. Country codes come from the
-address Ashby stores (where codes such as US or GB are allowed) and from full country names inside the
-location text (where a two-letter part such as CA is a state, not Canada, so only names count).
+Places match by what they stand for (src/places.py). A country matches jobs in it and jobs posted for a
+region that holds it ("Kenya" finds "Remote - EMEA"); a region matches jobs in any of its countries or
+posted for an overlapping region ("EMEA" finds "Greece (Remote)" and "Remote - Europe"); "Worldwide"
+matches jobs marked worldwide, global or anywhere, and jobs whose location is just "Remote" with no
+country in their address. Jobs marked worldwide match every country and region too. A city, or anything
+else, matches by its words inside a location. Country codes come from the address Ashby stores (where
+codes such as US or GB are allowed) and from full country names inside the location text (where a
+two-letter part such as CA is a state, not Canada, so only names count).
 """
 import re
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from functools import lru_cache
+
+from . import places
 
 WORD = re.compile(r'[^\W_]+[+#]*')
 WORK_TYPE = {'Remote': 'remote', 'Hybrid': 'hybrid', 'OnSite': 'onsite'}
@@ -104,16 +112,54 @@ def country_code(text: str | None, allow_codes: bool) -> str | None:
         return None
 
 
+def is_country(text: str) -> bool:
+    return country_code(text, allow_codes=False) is not None
+
+
+def classify_place(text: str) -> tuple[str, frozenset[str]]:
+    """A typed place -> ('world' | 'region' | 'country' | 'text', its countries). A region name wins over
+    a country code ("EU"); anything else is a city or a word to find in the location."""
+    toks = places.tokens(text)
+    if places.world_query(toks):
+        return 'world', frozenset()
+    region = places.region_query(toks)
+    if region is not None:
+        return 'region', region
+    code = country_code(text, allow_codes=True)
+    return ('country', frozenset({code})) if code else ('text', frozenset())
+
+
+@dataclass
+class Area:
+    """Where a job can be done: its location texts, countries, the regions it is posted for, whether a
+    location says worldwide (and names no place), and whether one is just "Remote" with no address country."""
+    texts: list[str]
+    countries: set[str]
+    regions: list[frozenset[str]]
+    worldwide: bool
+    open_remote: bool
+
+
 class Place:
     def __init__(self, text: str):
         self.text = text
         self.words = ' '.join(words(text))
-        self.code = country_code(text, allow_codes=True)
+        self.kind, self.countries = classify_place(text)
 
-    def matches(self, location_texts: list[str], codes: set[str]) -> bool:
-        if self.code and self.code in codes:
+    def covers(self, region: frozenset[str]) -> bool:
+        """A job posted for a region is for this place when the region lies inside it ("Europe" for EMEA)
+        or holds at least half of it ("EU" for DACH, "EMEA" for Kenya). One shared country is not enough:
+        "EU" is not a Middle East job because of Cyprus."""
+        shared = len(region & self.countries)
+        return shared > 0 and (shared == len(region) or 2 * shared >= len(self.countries))
+
+    def matches(self, area: Area) -> bool:
+        if self.kind == 'world':
+            return area.worldwide or area.open_remote
+        if self.kind in ('region', 'country') and (
+                area.worldwide or area.countries & self.countries or any(self.covers(r) for r in area.regions)):
             return True
-        return bool(self.words) and any(f' {self.words} ' in f' {" ".join(words(t))} ' for t in location_texts)
+        return bool(self.words) and any(f' {self.words} ' in f' {" ".join(words(t))} ' for t in area.texts)
 
 
 def _address(entry: dict | None) -> dict:
@@ -121,7 +167,17 @@ def _address(entry: dict | None) -> dict:
 
 
 def _location_parts(text: str | None) -> list[str]:
-    return [p.strip() for p in re.split(r'[,()/|;]| - ', text or '') if p.strip()]
+    return [p.strip() for p in re.split(r'[,()/|;]|\s[-–—]\s', text or '') if p.strip()]
+
+
+def _part_codes(part: str) -> set[str]:
+    """A country named by a location part: "Ireland", or each side of "US or Canada" / "UK & Europe" (a
+    country whose name holds "and", such as Trinidad and Tobago, is read whole first)."""
+    code = country_code(part, allow_codes=False)
+    if code:
+        return {code}
+    sides = re.split(r'\s+(?:or|and)\s+|\s*[&+]\s*', part)
+    return {c for c in (country_code(s, allow_codes=False) for s in sides) if c} if len(sides) > 1 else set()
 
 
 def job_places(job: dict) -> tuple[list[str], set[str]]:
@@ -134,14 +190,47 @@ def job_places(job: dict) -> tuple[list[str], set[str]]:
         for t in (name, addr.get('addressLocality'), addr.get('addressRegion'), addr.get('addressCountry')):
             if t and t not in texts:
                 texts.append(t)
-        code = country_code(addr.get('addressCountry'), allow_codes=True)
-        if code:
-            codes.add(code)
+        address_code = country_code(addr.get('addressCountry'), allow_codes=True)
+        if address_code:
+            codes.add(address_code)
         for part in _location_parts(name):
-            code = country_code(part, allow_codes=False)
-            if code:
-                codes.add(code)
+            # "Atlanta, Georgia" with a US address is the state: the one country name that is also a US state
+            codes.update(c for c in _part_codes(part) if not (c == 'GE' and address_code == 'US'))
     return texts, codes
+
+
+def _entry_regions(name: str) -> list[frozenset[str]]:
+    """The regions one location names. Countries in brackets after a region say which part of it the job
+    means: "Americas (USA or Canada)" is the US and Canada, not all of the Americas; "Remote (Canada, UK,
+    EU)" names a region inside the brackets and keeps it."""
+    inside = ' '.join(re.findall(r'\(([^()]*)\)', name))
+    outside = re.sub(r'\([^()]*\)', ' ', name)
+    out_regions = places.regions_in(places.tokens(outside), is_country)
+    in_regions = places.regions_in(places.tokens(inside), is_country)
+    in_codes = set().union(*(_part_codes(p) for p in _location_parts(inside))) if inside.strip() else set()
+    if out_regions and in_codes and not in_regions and all(any(c in r for r in out_regions) for c in in_codes):
+        return []
+    return out_regions + in_regions
+
+
+def job_area(job: dict) -> Area:
+    texts, codes = job_places(job)
+    regions, worldwide, open_remote = [], False, False
+    home = country_code(_address(job).get('addressCountry'), allow_codes=True)
+    for entry in [job] + list(job.get('secondaryLocations') or []):
+        name = entry.get('location') or entry.get('locationName')
+        if not name or not name.strip():
+            continue
+        kind = places.entry_kind(places.tokens(name))
+        if kind == 'world':
+            worldwide = True
+        elif kind == 'remote':
+            # plain "Remote" is open everywhere only when no address says where: "San Francisco" with a US
+            # address and a second location "Remote" is most likely remote in the US
+            open_remote = open_remote or not (home or country_code(_address(entry).get('addressCountry'), allow_codes=True))
+        else:
+            regions += _entry_regions(name)
+    return Area(texts, codes, regions, worldwide, open_remote)
 
 
 def work_type(job: dict) -> str | None:
@@ -152,7 +241,8 @@ def work_type(job: dict) -> str | None:
         return 'remote'
     names = [job.get('location') or job.get('locationName')] + [
         s.get('location') or s.get('locationName') for s in job.get('secondaryLocations') or []]
-    return 'remote' if any('remote' in words(n) for n in names if n) else None
+    return 'remote' if any('remote' in words(n) or places.entry_kind(places.tokens(n)) == 'world'
+                           for n in names if n) else None
 
 
 def job_type(job: dict) -> str | None:
@@ -206,8 +296,8 @@ class Filters:
         if self.work_types and work_type(job) not in self.work_types:
             return False
         if self.places:
-            texts, codes = job_places(job)
-            if not any(p.matches(texts, codes) for p in self.places):
+            area = job_area(job)
+            if not any(p.matches(area) for p in self.places):
                 return False
         if self.within_days is not None:
             posted = parse_time(job.get('publishedAt'))

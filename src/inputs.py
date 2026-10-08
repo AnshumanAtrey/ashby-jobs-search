@@ -15,6 +15,9 @@ import re
 from dataclasses import dataclass, field
 from urllib.parse import unquote, urlparse
 
+from . import places
+from .rows import classify_place
+
 DEFAULT_MAX_JOBS = 100
 MAX_JOBS_CAP = 100_000             # our guard: more than every open Ashby job (61,272 on 2026-09-30)
 SPLIT = re.compile(r'[,;\n\r\t]+')
@@ -171,23 +174,46 @@ def parse_choices(value, key: str, allowed: tuple[str, ...], aliases: dict[str, 
     return chosen if len(chosen) < len(allowed) else []
 
 
+REMOTE_WORDS = re.compile(r'\b(?:fully\s+)?remote(?:ly)?\b|\bwfh\b', re.I)
+
+
 def parse_locations(value, work_types: list[str], notes: list[str]) -> tuple[list[str], list[str]]:
     """Places -> (places, work types). "Remote" typed as a place asks for remote jobs, so it moves to
-    the work type (a place next to it still filters, as in "Remote, United States")."""
-    places, moved = [], list(work_types)
+    the work type (a place next to it still filters, as in "Remote, United States" or "Remote EMEA").
+    "Worldwide", "Anywhere" and "Global" stay places: they find the jobs open everywhere."""
+    chosen, moved = [], list(work_types)
     for token in _items(value):
         text = _clean(token)
-        kind = _alias(text, WORK_TYPE_ALIASES)
-        if kind:
-            if kind not in moved:
-                moved.append(kind)
-            notes.append(f'Read "{text}" in location as the {kind} work type.')
-            continue
-        if text and text.lower() not in (p.lower() for p in places):
-            places.append(text)
+        toks = places.tokens(text)
+        if places.world_query(toks):
+            notes.append(f'Read "{text}" in location as jobs open worldwide: marked worldwide, global or anywhere, '
+                         f'or just "Remote" with no country.')
+        else:
+            kind = _alias(text, WORK_TYPE_ALIASES)
+            if kind:
+                if kind not in moved:
+                    moved.append(kind)
+                notes.append(f'Read "{text}" in location as the {kind} work type.')
+                continue
+            rest = REMOTE_WORDS.sub(' ', text)
+            if rest != text:                                         # "Remote EMEA", "Remote - US", "Remote 100%"
+                rest = re.sub(r'^(?:in|within|from)\s+', '', rest.strip(' \t-–—:,()%'), flags=re.I).strip(' \t-–—:,()%')
+                if 'remote' not in moved:
+                    moved.append('remote')
+                if not re.search(r'[^\W\d_]', rest):
+                    notes.append(f'Read "{text}" in location as the remote work type.')
+                    continue
+                notes.append(f'Read "{text}" in location as the remote work type in {rest}.')
+                text = rest
+            place, countries = classify_place(text)
+            if place == 'region':
+                notes.append(f'Read "{text}" in location as a region of {len(countries)} countries: it finds jobs in '
+                             f'them, jobs posted for the region and jobs open worldwide.')
+        if text and text.lower() not in (p.lower() for p in chosen):
+            chosen.append(text)
     if len(moved) == len(WORK_TYPES):
         moved = []
-    return places, moved
+    return chosen, moved
 
 
 def parse_period(value, notes: list[str]) -> float | None:

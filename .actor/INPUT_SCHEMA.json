@@ -20,7 +20,7 @@
             "title": "Where the job is (location)",
             "type": "array",
             "editor": "stringList",
-            "description": "Type where the jobs should be: a city, state or country, one per line, for example London or United States. US, USA and United States all work. Type Remote here to get remote jobs. Leave it empty for anywhere.",
+            "description": "Type where the jobs should be: a city, state, country or region, one per line, for example London, United States, EMEA or LatAm. US, USA and United States all work; a region finds its countries and the jobs posted for it. Worldwide finds the jobs open everywhere. Type Remote here to get remote jobs. Leave it empty for anywhere.",
             "placeholderValue": "United States",
             "example": [
                 "United States"

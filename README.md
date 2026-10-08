@@ -12,7 +12,7 @@ Ashby is the applicant tracking system behind the job boards of OpenAI, Ramp, No
 
 - **Every company at once**: the actor carries a list of 3,814 Ashby boards (3,478 hiring, 61,272 open jobs on 2026-09-30), found in the Wayback Machine index of jobs.ashbyhq.com, Hacker News hiring posts and public job lists, each one checked live. Name any other company in Only these companies and it is searched too.
 - **Read live during your run**: each board is read from Ashby itself when you press Start, so every job returned is open at that moment. The newest jobs come first.
-- **Filters that match how jobs are written**: title words (frontend also finds Front-End and Front End, java does not find JavaScript), places by city, state or country (US, USA and United States are the same), remote, hybrid or onsite, full-time, contract or intern, and posting date.
+- **Filters that match how jobs are written**: title words (frontend also finds Front-End and Front End, java does not find JavaScript), places by city, state, country or region (US, USA and United States are the same; EMEA, Europe, LatAm and APAC find their countries; Worldwide finds jobs open everywhere), remote, hybrid or onsite, full-time, contract or intern, and posting date.
 - **Two row sizes**: a job row with the links and the basics, or a row with full details (description as text and HTML, salary minimum and maximum, currency, period, equity, city, region, country).
 - **Job link checker**: paste Ashby job links and each one comes back open (with its data), closed, or not found. Clean dead links out of a job board or a spreadsheet.
 
@@ -88,7 +88,7 @@ Nothing is required. Type one job title and press Start, and every other field u
 | Field | Default | What it does |
 |---|---|---|
 | Job titles to find (`searchTerms`) | every job | One title or keyword per line. A job matches when its title has every word of a line. A pasted Google dork or jobs.ashbyhq.com link works too. |
-| Where the job is (`location`) | anywhere | Cities, states or countries, one per line. US, USA and United States are the same. Remote typed here means remote jobs. |
+| Where the job is (`location`) | anywhere | Cities, states, countries or regions, one per line. US, USA and United States are the same. A region (EMEA, Europe, EU, LatAm, APAC, Africa, DACH, Nordics and more) finds jobs in its countries and jobs posted for it. Worldwide finds jobs marked worldwide or anywhere, and plain "Remote" jobs with no country. Remote typed here means remote jobs. |
 | Remote or onsite (`workType`) | all | remote, hybrid, onsite, or several. Typed words such as wfh or office work too. |
 | Posted in the last (`postedWithin`) | any time | 24 hours, 3 days, 7 days, 30 days, or your own period such as 48 hours or 2 weeks. |
 | Number of jobs (`maxJobs`) | 100 | How many jobs to get, newest first. 0 gets every match. |
@@ -174,7 +174,7 @@ No. A job is returned only when it is on the company's board at run time. For li
 
 ### How do I get only remote jobs, or jobs in one country?
 
-Pick remote in Remote or onsite, and type the country in Location (United States, Germany, India, UK). A job matches when any of its locations is in that country, remote locations such as Remote (US) included.
+Pick remote in Remote or onsite, and type the country in Location (United States, Germany, India, UK). A job matches when any of its locations is in that country, remote locations such as Remote (US) included, and also when it is posted for a region that holds the country (Kenya finds "Remote - EMEA") or marked worldwide. To find remote jobs you can take from anywhere, type Worldwide: it finds jobs marked worldwide, global or anywhere, and plain "Remote" jobs that name no country. Regions work too: EMEA finds "Greece (Remote)" and "Remote - Europe".
 
 ### How do I get new jobs every day?
 
@@ -200,7 +200,7 @@ Job postings are published for the public to read. Use the data lawfully: job se
 
 - Ashby only. Greenhouse, Lever, Workday and other applicant tracking systems are not read.
 - Only companies on the list or named in the run are searched. A company that has never appeared in the sources above is missing until you name it.
-- Places match by country and by the words of the place: London finds London, but Bangalore does not find Bengaluru, and Europe matches only locations that say Europe.
+- Places match by country, by region and by the words of the place: London finds London, but Bangalore does not find Bengaluru (city spellings are matched as typed).
 - Titles match by words, not by meaning: ML engineer does not find Machine Learning Engineer. Add both lines.
 - Pay is what the company publishes; about 45% of Ashby jobs have it.
 

@@ -11,7 +11,7 @@ An Apify actor that searches every company's Ashby job board at once. Ashby (the
 Nothing is required: one job title and Start gives the 100 newest matching jobs; an empty form gives the 100 newest jobs on Ashby. No input stops a run: unreadable values fall back to the field's default with a note in the OUTPUT record.
 
 - Job titles to find (searchTerms): one per line; a job matches when its title has every word of one line (frontend also finds Front-End). A pasted Google dork or jobs.ashbyhq.com link is read too. Empty: every job.
-- Where the job is (location): cities, states or countries; countries match by name or code (US, USA, United States). Remote here means remote jobs. Empty: anywhere.
+- Where the job is (location): cities, states, countries or regions; countries match by name or code (US, USA, United States); regions (EMEA, Europe, EU, LatAm, APAC, Africa, DACH, Nordics) match their countries and jobs posted for them; Worldwide matches jobs open everywhere. Remote here means remote jobs. Empty: anywhere.
 - Remote or onsite (workType): remote, hybrid, onsite, or several; typed words such as wfh work too. Empty: all.
 - Posted in the last (postedWithin): 24 hours, 3 days, 7 days, 30 days, any time (default), or a custom period such as 48 hours.
 - Number of jobs (maxJobs): default 100, newest first; 0 saves every match.
