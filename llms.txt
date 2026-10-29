@@ -63,6 +63,7 @@ title, company, location, otherLocations, workType, employmentType, department, 
 - $0.0012 per job row ($1.20 per 1,000), including a checked link that is closed or not found
 - $0.00135 per job row with full details ($1.35 per 1,000)
 - No start fee; a run that matches nothing costs $0
+- On Apify's Scale plan every row is 10% less, on Business and above 20% less
 
 Typical run (one job title, the 100 newest jobs): $0.12. 20 jobs: $0.024. 1,000 jobs: $1.20. Every open job on Ashby (about 60,000): $72.
 

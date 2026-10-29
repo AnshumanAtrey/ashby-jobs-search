@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-30
+
+- Apify SDK 4 (`apify>=4.1,<5`): SDK 3.4.1 raised on runs started by Apify's AI assistant (run origin
+  APIFY_AI) wherever a status message was read back. 56 tests pass; the example (software engineer) gave 100 jobs and 100 charges locally.
+- Store discounts: 10% off on Scale, 20% off on Business and above; Free and Starter prices unchanged.
+
 ## [1.1] - 2026-10-08: regions and worldwide in the location filter
 
 A user searched remote software engineer jobs in Worldwide, Anywhere, EMEA, Africa and Kenya and got none,

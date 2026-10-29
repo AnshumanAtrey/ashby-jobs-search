@@ -21,6 +21,10 @@ on:
     paths-ignore:
       - '.github/**'
   workflow_dispatch:
+    inputs:
+      build_tag:
+        description: 'Build tag for a staging build, e.g. beta (default: latest from .actor/actor.json). Run it with build=beta; users keep running latest.'
+        required: false
 
 concurrency:
   group: apify-deploy-${{ github.ref }}
@@ -44,6 +48,7 @@ jobs:
         with:
           token: ${{ secrets.APIFY_TOKEN }}
           actor-id: ${{ steps.meta.outputs.actor_id }}
+          build-tag: ${{ inputs.build_tag }}
 
       - name: Report build
         run: |
@@ -54,14 +59,15 @@ jobs:
       # description, SEO fields, categories, permissions, example input, run
       # defaults). This keeps GitHub the source of truth for the listing too.
       - name: Sync Store listing metadata
+        if: ${{ !inputs.build_tag }}
         env:
           APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
         run: node scripts/store-metadata.mjs
 
-      # Example tasks: each becomes a public landing page with its own Google-indexed page
-      # (up to 10 per Actor). Created, updated and published from .actor/tasks.json; never deleted.
+      # Example tasks are Store landing pages of their own (Google-indexed, with a .md for AI agents).
+      # Created and updated from .actor/tasks.json; never deleted.
       - name: Publish example tasks
-        if: hashFiles('.actor/tasks.json') != ''
+        if: ${{ !inputs.build_tag }}
         env:
           APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
         run: node scripts/publish-tasks.mjs
@@ -73,6 +79,7 @@ jobs:
   # number is the workflow run number (see scripts/mcp-server-json.mjs).
   mcp-registry:
     needs: deploy
+    if: ${{ !inputs.build_tag }}
     runs-on: ubuntu-latest
     permissions:
       id-token: write

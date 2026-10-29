@@ -29,7 +29,9 @@ if (!existsSync('.actor/tasks.json')) { console.log('no .actor/tasks.json: nothi
 const spec = read('.actor/tasks.json');
 const store = read('.actor/store.json');
 const fields = new Set(Object.keys(read('.actor/INPUT_SCHEMA.json').properties || {}));
-const views = new Set(Object.keys(read('.actor/actor.json').storages?.dataset?.views || {}));
+// The dataset schema sits inline in actor.json or in its own file, a path relative to .actor/.
+const dataset = read('.actor/actor.json').storages?.dataset;
+const views = new Set(Object.keys((typeof dataset === 'string' ? read(`.actor/${dataset}`) : dataset)?.views || {}));
 
 /* ---------------------------------------------------------------- checks -- */
 const errors = [];

@@ -48,7 +48,7 @@ The database actors (fantastic-jobs, jobo.world) answer from jobs they stored ea
 
 ## How much does it cost to scrape Ashby jobs?
 
-Pay per event: **$1.20 per 1,000 jobs** ($0.0012 a row), or **$1.35 per 1,000 with full details** ($0.00135 a row). A checked link that is closed or not found is one job row. No start fee, no monthly fee, platform usage included. A run that matches nothing, a skipped entry and a run that fails on its input cost $0.
+Pay per event: **$1.20 per 1,000 jobs** ($0.0012 a row), or **$1.35 per 1,000 with full details** ($0.00135 a row). A checked link that is closed or not found is one job row. No start fee, no monthly fee, platform usage included. A run that matches nothing, a skipped entry and a run that fails on its input cost $0. On paid Apify plans: $1.08 per 1,000 jobs ($1.22 with details) on Scale, $0.96 ($1.08) on Business and above.
 
 | Run | Rows | Price | With full details |
 |---|---|---|---|
