@@ -162,9 +162,6 @@
             "editor": "stringList",
             "description": "Paste Ashby job links, one per line, to check whether they are still open instead of searching. Each link comes back open (with the job), closed, or not found. Handy for cleaning dead links out of a job board or a sheet.",
             "placeholderValue": "https://jobs.ashbyhq.com/ramp/34413f8d-26bf-4bbc-8ade-eb309a0e2245",
-            "example": [
-                "https://jobs.ashbyhq.com/ramp/34413f8d-26bf-4bbc-8ade-eb309a0e2245"
-            ],
             "default": [],
             "sectionCaption": "Check job links",
             "nullable": true
