@@ -8,7 +8,7 @@ Use it as an Ashby jobs API, an Ashby job board scraper, a startup jobs feed, a 
 
 ## What does it do?
 
-It searches the job boards of every company on Ashby at once, live, and returns one row per open job, newest first. Ashby is the applicant tracking system behind the job boards of OpenAI, Ramp, Notion, Linear, Snowflake and thousands of startups. Every company gets its own board at jobs.ashbyhq.com followed by the company's name, and Ashby has no search across companies. This actor is that search.
+Ashby Jobs Scraper searches the job boards of every company on Ashby at once, live, and returns one row per open job, newest first. Ashby is the applicant tracking system behind the job boards of OpenAI, Ramp, Notion, Linear, Snowflake and thousands of startups. Every company gets its own board at jobs.ashbyhq.com followed by the company's name, and Ashby has no search across companies. This actor is that search.
 
 - **Every company at once**: the actor carries a list of 3,814 Ashby boards (3,478 hiring, 61,272 open jobs on 2026-09-30), found in the Wayback Machine index of jobs.ashbyhq.com, Hacker News hiring posts and public job lists, each one checked live. Name any other company in Only these companies and it is searched too.
 - **Read live during your run**: each board is read from Ashby itself when you press Start, so every job returned is open at that moment. The newest jobs come first.
@@ -49,7 +49,7 @@ The database actors (fantastic-jobs, jobo.world) answer from jobs they stored ea
 
 ## How much does it cost to scrape Ashby jobs?
 
-**$1.20 per 1,000 jobs** ($0.0012 a job), or **$1.35 per 1,000 with full details** ($0.00135 a job), pay per event. A checked link that is closed or not found is one job row. No start fee, no monthly fee, platform usage included. A run that matches nothing, a skipped entry and a spending limit too low for one job cost $0.
+Ashby Jobs Scraper costs **$1.20 per 1,000 jobs** ($0.0012 a job), or **$1.35 per 1,000 with full details** ($0.00135 a job), pay per event. A checked link that is closed or not found is one job row. No start fee, no monthly fee, platform usage included. A run that matches nothing, a skipped entry and a spending limit too low for one job cost $0.
 
 | Apify plan | Job | Job with details |
 |---|---|---|
@@ -57,7 +57,7 @@ The database actors (fantastic-jobs, jobo.world) answer from jobs they stored ea
 | Scale, 10% less | $0.00108 ($1.08 per 1,000) | $0.001215 ($1.215 per 1,000) |
 | Business and above, 20% less | $0.00096 ($0.96 per 1,000) | $0.00108 ($1.08 per 1,000) |
 
-The "from $0.96 / 1,000 jobs" on the Store page is the Business price.
+Ashby Jobs Scraper's Apify Store header, "from $0.96 / 1,000 jobs", shows the lowest discount-tier price, the GOLD price. Each Apify plan sits in a discount tier: FREE (the Free plan) and BRONZE (Starter) pay the base price, $1.20 per 1,000 jobs; SILVER (Scale) pays 10% less, $1.08; GOLD (Business) and the enterprise tiers above it pay 20% less, $0.96.
 
 | Run (Free and Starter price) | Rows | Price | With full details |
 |---|---|---|---|
@@ -91,7 +91,7 @@ Where others are cheaper: jobo.world, webdata_labs, blackfalcondata and johnvc c
 
 ## Which inputs does it take?
 
-Nothing is required. Type one job title and press Start, and every other field uses its default: every place, every work type, any posting date, the 100 newest jobs. Press Start with the form empty for the 100 newest jobs on all of Ashby. No input stops a run: anything the actor cannot read falls back to the field's default, and the run summary says so.
+Ashby Jobs Scraper has no required field. Type one job title and press Start, and every other field uses its default: every place, every work type, any posting date, the 100 newest jobs. Press Start with the form empty for the 100 newest jobs on all of Ashby. No input stops a run: anything the actor cannot read falls back to the field's default, and the run summary says so.
 
 | Field | Default | What it does |
 |---|---|---|
@@ -117,7 +117,7 @@ The simplest input, one job title:
 
 ## What does the output look like?
 
-One row per job, newest first. A row from the example input on 2026-09-30:
+Ashby Jobs Scraper returns one row per job, newest first. A row from the example input on 2026-09-30:
 
 ```json
 {
@@ -178,7 +178,7 @@ The run summary is the OUTPUT record: boards read, boards and companies with a m
 
 ## How fast is it?
 
-About two minutes to search all 3,814 boards. Measured on Apify with the default settings (1024 MB of memory, 32 boards read at once):
+Ashby Jobs Scraper takes about two minutes to search all 3,814 boards. Measured on Apify with the default settings (1024 MB of memory, 32 boards read at once):
 
 - **The example input** (software engineer, the 100 newest jobs), build 1.1.5 on 2026-10-29: 146 seconds. 4,694 jobs matched at 1,314 companies; the 100 newest were saved and 100 charged (run 6hcFeE2vcZZtjuWo5).
 - **A job title, last 7 days, 20 jobs** (every board), build 1.0.1 on 2026-09-30: 103 seconds. The first pass reads the 3,814 board pages; the second reads the full job list only of the 1,389 boards whose titles could match. Peak memory 184 MB.
@@ -190,19 +190,19 @@ About two minutes to search all 3,814 boards. Measured on Apify with the default
 
 ### Can I just type one keyword and press Start?
 
-Yes. Type a job title such as product designer and press Start: you get the 100 newest matching jobs from every Ashby company, from any place, any work type and any date. Add the other fields only to narrow the search.
+Ashby Jobs Scraper runs on one keyword: type a job title such as product designer and press Start, and you get the 100 newest matching jobs from every Ashby company, from any place, any work type and any date. Add the other fields only to narrow the search.
 
 ### Does it work on the free Apify plan?
 
-Yes. The free plan's $5 monthly credit pays for 4,166 jobs at $1.20 per 1,000, or 3,703 with full details. There is no start fee, so all of it goes to jobs, and Number of jobs (`maxJobs`) caps each run at 100 by default ($0.12).
+Ashby Jobs Scraper works on the free Apify plan: the plan's $5 monthly credit pays for 4,166 jobs at $1.20 per 1,000, or 3,703 with full details. There is no start fee, so all of it goes to jobs, and Number of jobs (`maxJobs`) caps each run at 100 by default ($0.12).
 
 ### What happens if I type something the actor cannot read?
 
-The run still goes ahead. A value it cannot read falls back to the field's default (a period such as soonish means any time, a job count such as lots means 100), and the run summary, the OUTPUT record, lists every note about how the input was read.
+Ashby Jobs Scraper still runs when it cannot read an input value: the value falls back to the field's default (a period such as soonish means any time, a job count such as lots means 100), and the run summary, the OUTPUT record, lists every note about how the input was read.
 
 ### Is this the same as the Google dork site:jobs.ashbyhq.com?
 
-It is that search done at the source. Googling site:jobs.ashbyhq.com intext:frontend, with Tools set to Past 24 hours, shows only the pages Google has indexed, and indexed job links go stale: of the Greenhouse job links in a September 2026 web crawl, 30% were already closed two to four weeks later (checked on 2026-09-30). This actor reads every board from Ashby during the run, so every job it returns is open. Paste the dork into Job titles to find (`searchTerms`): its keyword is searched, a site: that names one board (site:jobs.ashbyhq.com/openai) searches only that company, a -word, -"phrase", -intitle:word or -(word OR word) leaves those jobs out as Leave out words (`excludeTerms`) does, and OR searches each alternative. The run's notes say how the dork was read.
+Ashby Jobs Scraper is the site:jobs.ashbyhq.com Google dork done at the source. Googling site:jobs.ashbyhq.com intext:frontend, with Tools set to Past 24 hours, shows only the pages Google has indexed, and indexed job links go stale: of the Greenhouse job links in a September 2026 web crawl, 30% were already closed two to four weeks later (checked on 2026-09-30). This actor reads every board from Ashby during the run, so every job it returns is open. Paste the dork into Job titles to find (`searchTerms`): its keyword is searched, a site: that names one board (site:jobs.ashbyhq.com/openai) searches only that company, a -word, -"phrase", -intitle:word or -(word OR word) leaves those jobs out as Leave out words (`excludeTerms`) does, and OR searches each alternative. The run's notes say how the dork was read.
 
 ### How is it different from Ashby's own job posting API?
 
@@ -210,43 +210,43 @@ Ashby's public job posting API (developers.ashbyhq.com) returns one company's bo
 
 ### Which companies are included?
 
-3,814 Ashby boards, last rebuilt on 2026-09-30 from the Wayback Machine index of jobs.ashbyhq.com, Hacker News hiring posts and public job lists. Any company can be added for one run in Only these companies, even if it is not on the list.
+Ashby Jobs Scraper includes 3,814 Ashby boards, a list last rebuilt on 2026-09-30 from the Wayback Machine index of jobs.ashbyhq.com, Hacker News hiring posts and public job lists. Any company can be added for one run in Only these companies, even if it is not on the list.
 
 ### How do I search one company?
 
-Type it in Only these companies (`companies`): the company name (OpenAI), its board name (openai) or its board link (https://jobs.ashbyhq.com/openai), one per line. Leave Job titles to find empty and set Number of jobs to 0 for every open job there. A few named companies take seconds, and a company that is not on the list is looked up anyway.
+To search one company on Ashby, type it in Only these companies (`companies`): the company name (OpenAI), its board name (openai) or its board link (https://jobs.ashbyhq.com/openai), one per line. Leave Job titles to find empty and set Number of jobs to 0 for every open job there. A few named companies take seconds, and a company that is not on the list is looked up anyway.
 
 ### How fresh are the jobs?
 
-As fresh as Ashby: every board is read during your run. The first row of the example run was posted 6 minutes before the run finished.
+Jobs from Ashby Jobs Scraper are as fresh as Ashby itself: every board is read during your run. The first row of the example run was posted 6 minutes before the run finished.
 
 ### Are there dead links?
 
-No. A job is returned only when it is on the company's board at run time. For links you already have, use Job links to check: each one comes back open, closed or not found.
+Ashby Jobs Scraper returns no dead links: a job is returned only when it is on the company's board at run time. For links you already have, use Job links to check: each one comes back open, closed or not found.
 
 ### How do I check a list of job links?
 
-Paste the Ashby job links into Job links to check (`jobUrls`), one per line; the actor then checks them instead of searching. Each link comes back as one row: open (with the job's data), closed (no longer on the board) or not found (no such Ashby board). Each row is one Job charge ($0.0012), or one Job with details ($0.00135) for an open job when Full details is on. A link the actor could not reach is counted in the run summary and not charged.
+To check a list of Ashby job links, paste them into Job links to check (`jobUrls`), one per line; the actor then checks them instead of searching. Each link comes back as one row: open (with the job's data), closed (no longer on the board) or not found (no such Ashby board). Each row is one Job charge ($0.0012), or one Job with details ($0.00135) for an open job when Full details is on. A link the actor could not reach is counted in the run summary and not charged.
 
 ### How do I get only remote jobs, or jobs in one country?
 
-Pick remote in Remote or onsite, and type the country in Location (United States, Germany, India, UK). A job matches when any of its locations is in that country, remote locations such as Remote (US) included, and also when it is posted for a region that holds the country (Kenya finds "Remote - EMEA") or marked worldwide. To find remote jobs you can take from anywhere, type Worldwide: it finds jobs marked worldwide, global or anywhere, and plain "Remote" jobs that name no country. Regions work too: EMEA finds "Greece (Remote)" and "Remote - Europe".
+For remote Ashby jobs, pick remote in Remote or onsite (`workType`); for one country, type it in Where the job is (`location`): United States, Germany, India, UK. A job matches when any of its locations is in that country, remote locations such as Remote (US) included, and also when it is posted for a region that holds the country (Kenya finds "Remote - EMEA") or marked worldwide. To find remote jobs you can take from anywhere, type Worldwide: it finds jobs marked worldwide, global or anywhere, and plain "Remote" jobs that name no country. Regions work too: EMEA finds "Greece (Remote)" and "Remote - Europe".
 
 ### How often should I run it?
 
-Once a day suits most job feeds: save the input as a task with Posted in the last set to 24 hours and schedule it daily in Apify. Each run returns only the last day's jobs, and a run that finds nothing costs $0. A job board can check its saved Ashby links on the same schedule.
+Running Ashby Jobs Scraper once a day suits most job feeds: save the input as a task with Posted in the last set to 24 hours and schedule it daily in Apify. Each run returns only the last day's jobs, and a run that finds nothing costs $0. A job board can check its saved Ashby links on the same schedule.
 
 ### Can I get every job on Ashby?
 
-Yes: leave the search empty and set Number of jobs to 0, about 60,000 rows ($72). Reading every board took 127 to 143 seconds in the tests above, which saved the 100 newest; writing 60,000 rows to the dataset adds to that.
+Ashby Jobs Scraper gets every open job on Ashby when you leave the search empty and set Number of jobs to 0: about 60,000 rows ($72). Reading every board took 127 to 143 seconds in the tests above, which saved the 100 newest; writing 60,000 rows to the dataset adds to that.
 
 ### Does it need a login, an API key or a proxy?
 
-No. It reads Ashby's public job boards and Ashby's public job posting API, the same sources a visitor's browser uses.
+Ashby Jobs Scraper needs no login, API key or proxy: it reads Ashby's public job boards and Ashby's public job posting API, the same sources a visitor's browser uses.
 
 ### How do I call it from the API, Python, JavaScript, n8n or an AI agent?
 
-With an Apify API token from Apify Console (Settings, API & Integrations). Each example searches for software engineer and returns the jobs.
+Ashby Jobs Scraper runs from the Apify API, Python, JavaScript, n8n or an AI agent with an Apify API token from Apify Console (Settings, API & Integrations). Each example searches for software engineer and returns the jobs.
 
 The Apify API in one call, which waits for the run and returns the rows as JSON. This endpoint waits up to 300 seconds; the example input took 146, and the clients below wait for runs of any length.
 
@@ -285,7 +285,7 @@ AI agents: add the Apify MCP server with this actor as a tool, `https://mcp.apif
 
 ### Is it legal to scrape Ashby jobs?
 
-It reads job postings that companies publish for anyone to read, from Ashby's public job boards and public job posting API, with no login. Use the data lawfully: job search, job boards that link to the original posting, hiring research and outreach. You are responsible for how you use it, including the site's terms and the privacy laws that apply to you.
+Ashby Jobs Scraper reads job postings that companies publish for anyone to read, from Ashby's public job boards and public job posting API, with no login. Use the data lawfully: job search, job boards that link to the original posting, hiring research and outreach. You are responsible for how you use it, including the site's terms and the privacy laws that apply to you.
 
 ## Limitations
 

@@ -25,6 +25,10 @@
   got 100 jobs.
 - Corrected: the company list was rebuilt once, on 2026-09-30, not "regularly", and the 143-second worst case read
   every board but saved 100 jobs, so the every-job answer no longer promises 60,000 rows in that time.
+- Answer engines: the cost section and llms.txt explain the Store header, "from $0.96 / 1,000 jobs": it shows the
+  lowest discount-tier price, GOLD (Business). FREE and BRONZE (Free, Starter) pay the base $1.20, SILVER (Scale) 10% less,
+  GOLD and above 20% less. Every answer under Common questions, and the first line under each question heading, names
+  its subject (Ashby Jobs Scraper, the free plan, Ashby job links) instead of opening with Yes, No or It.
 
 ## 2026-10-30
 

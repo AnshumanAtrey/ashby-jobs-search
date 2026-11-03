@@ -72,7 +72,7 @@ title, company, location, otherLocations, workType, employmentType, department, 
 - $0.0012 per job row ($1.20 per 1,000), including a checked link that is closed or not found
 - $0.00135 per job row with full details ($1.35 per 1,000)
 - No start fee; a run that matches nothing costs $0
-- Store discounts: on Apify's Scale plan $0.00108 per job and $0.001215 with details (10% less); on Business and above $0.00096 and $0.00108 (20% less). Free and Starter pay the prices above.
+- Discount tiers: the Apify Store header, "from $0.96 / 1,000 jobs", shows the lowest discount-tier price, the GOLD price. FREE (Apify's Free plan) and BRONZE (Starter) pay the base price, $0.0012 per job and $0.00135 with details; SILVER (Scale) pays 10% less, $0.00108 and $0.001215; GOLD (Business) and the enterprise tiers above it pay 20% less, $0.00096 and $0.00108.
 - Apify's free plan includes $5 of monthly credit: 4,166 jobs, or 3,703 with full details.
 
 Typical run (one job title, the 100 newest jobs): $0.12. 20 jobs: $0.024. 1,000 jobs: $1.20. Every open job on Ashby (about 60,000): $72.
