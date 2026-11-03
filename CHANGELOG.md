@@ -10,6 +10,8 @@
   server, and answers for the free plan, one company, a list of job links, how often to run, Ashby's own API and
   legality. Speed and the MCP proof come from build 1.1.5 runs on 2026-10-29 (6hcFeE2vcZZtjuWo5, dgUNTjJsfqIGdXSKu,
   28CpyA9m1tau9GAaW).
+- `maxJobs` says it is the maxItems of other actors: the MCP run sent maxItems 5, which the actor does not read, and
+  got 100 jobs.
 - Corrected: the company list was rebuilt once, on 2026-09-30, not "regularly", and the 143-second worst case read
   every board but saved 100 jobs, so the every-job answer no longer promises 60,000 rows in that time.
 

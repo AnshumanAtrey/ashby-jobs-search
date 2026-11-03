@@ -99,7 +99,7 @@ Nothing is required. Type one job title and press Start, and every other field u
 | Where the job is (`location`) | anywhere | Cities, states, countries or regions, one per line. US, USA and United States are the same. A region (EMEA, Europe, EU, LatAm, APAC, Africa, DACH, Nordics and more) finds jobs in its countries and jobs posted for it. Worldwide finds jobs marked worldwide or anywhere, and plain "Remote" jobs with no country. Remote typed here means remote jobs. |
 | Remote or onsite (`workType`) | all | remote, hybrid, onsite, or several. Typed words such as wfh or office work too. |
 | Posted in the last (`postedWithin`) | any time | 24 hours, 3 days, 7 days, 30 days, or your own period such as 48 hours or 2 weeks. |
-| Number of jobs (`maxJobs`) | 100 | How many jobs to get, newest first. 0 gets every match. |
+| Number of jobs (`maxJobs`) | 100 | How many jobs to get, newest first. 0 gets every match. Same as maxItems in other actors, which this actor does not read. |
 | Full details (`includeDetails`) | off | Adds the description (text and HTML), salary numbers, equity, city, region and country. |
 | Leave out words (`excludeTerms`) | nothing | Words that leave a job out when its title has them, such as senior or manager. |
 | Job type (`employmentType`) | every type | full-time, part-time, contract, intern, temporary, or several. |

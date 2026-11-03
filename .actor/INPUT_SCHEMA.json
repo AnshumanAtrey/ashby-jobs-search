@@ -80,7 +80,7 @@
             "type": "integer",
             "editor": "number",
             "unit": "jobs",
-            "description": "Type how many jobs to get, newest first: 100 by default. Type 0 to get every matching job. Each job is one charged row, so this also sets the most a run can cost.",
+            "description": "Type how many jobs to get, newest first: 100 by default. Type 0 to get every matching job. Each job is one charged row, so this also sets the most a run can cost. Same as maxItems in other actors: send maxJobs here, as maxItems is not read.",
             "prefill": 100,
             "example": 100,
             "default": 100,

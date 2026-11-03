@@ -14,7 +14,7 @@ Nothing is required: one job title and Start gives the 100 newest matching jobs;
 - Where the job is (location): cities, states, countries or regions; countries match by name or code (US, USA, United States); regions (EMEA, Europe, EU, LatAm, APAC, Africa, DACH, Nordics) match their countries and jobs posted for them; Worldwide matches jobs open everywhere. Remote here means remote jobs. Empty: anywhere.
 - Remote or onsite (workType): remote, hybrid, onsite, or several; typed words such as wfh work too. Empty: all.
 - Posted in the last (postedWithin): 24 hours, 3 days, 7 days, 30 days, any time (default), or a custom period such as 48 hours.
-- Number of jobs (maxJobs): default 100, newest first; 0 saves every match.
+- Number of jobs (maxJobs): default 100, newest first; 0 saves every match. This is the only row cap: the actor has no maxItems field, and a maxItems sent in the input is ignored (an MCP run on 2026-10-29 sent maxItems 5 and got 100 jobs).
 - Full details (includeDetails): adds description (text and HTML), salary min, max, currency and period, equity, city, region, country.
 - Leave out words (excludeTerms), Job type (employmentType: full-time, part-time, contract, intern, temporary), Match descriptions (searchDescriptions), Only these companies (companies: a name, board name or board link, to search one company), Job links to check (jobUrls: Ashby job links to check instead of searching).
 
