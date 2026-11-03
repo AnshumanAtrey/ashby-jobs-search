@@ -198,8 +198,8 @@ Job postings are published for the public to read. Use the data lawfully: job se
 
 ## Limitations
 
-- Ashby only. Greenhouse, Lever, Workday and other applicant tracking systems are not read.
-- Only companies on the list or named in the run are searched. A company that has never appeared in the sources above is missing until you name it.
+- Ashby only. Greenhouse, Lever, Workday and other applicant tracking systems are not read here: the sibling actors below search them.
+- Only companies on the list or named in the run are searched. A company that has never appeared in the sources above, or joined Ashby after the list was rebuilt on 2026-09-30, is missing until you name it.
 - Places match by country, by region and by the words of the place: London finds London, but Bangalore does not find Bengaluru (city spellings are matched as typed).
 - Titles match by words, not by meaning: ML engineer does not find Machine Learning Engineer. Add both lines.
 - Pay is what the company publishes; about 45% of Ashby jobs have it.
@@ -212,7 +212,7 @@ Built and maintained by **Anshuman Atrey** ([@AnshumanAtrey](https://github.com/
 
 - Purple-team security researcher, 5x hackathon winner
 - Co-founder of **Walrus Securitas** (AI cybersecurity SaaS) and **The Drone Syndicate** (autonomous defence drones)
-- Author of the OSINT and data actor portfolio on Apify Store
+- Author of the [OSINT and data actor portfolio on Apify Store](https://apify.com/anshumanatrey)
 
 ### Custom feature requests shipped within 1-2 hours (priority)
 
@@ -228,14 +228,15 @@ If you need a field, a filter or an output format this actor does not have, the 
 
 ## Sibling actors by the same maintainer
 
-| Actor | Use case |
+| Actor | What it searches |
 |---|---|
-| [google-trends-api-scraper](https://apify.com/anshumanatrey/google-trends-api-scraper) | Google Trends interest over time, regions, related queries and Trending Now, no login |
-| [linkedin-harvester](https://apify.com/anshumanatrey/linkedin-harvester) | Email -> best-match public LinkedIn profile URL + confidence score |
-| [holehe-email-osint](https://apify.com/anshumanatrey/holehe-email-osint) | Email -> registered accounts across 120+ platforms |
-| [theharvester-osint](https://apify.com/anshumanatrey/theharvester-osint) | Domain -> emails + subdomains + IPs from 54+ public sources |
-| [facebook-ads-library-api](https://apify.com/anshumanatrey/facebook-ads-library-api) | Facebook/Meta Ad Library -> ads, landing pages, creatives, advertiser leads, scam checks (no login) |
-| [telegram-channel-scraper](https://apify.com/anshumanatrey/telegram-channel-scraper) | Public Telegram channel -> posts, media links, inline buttons, reactions (no login) |
+| [Cornerstone Jobs Scraper](https://apify.com/anshumanatrey/cornerstone-jobs-search) | Jobs from every company on Cornerstone (csod.com), searched live |
+| [Workday Jobs Scraper](https://apify.com/anshumanatrey/workday-job-search) | Jobs from every company on Workday (myworkdayjobs.com), searched live |
+| [Deel Jobs Scraper](https://apify.com/anshumanatrey/deel-jobs-search) | Jobs from every company on Deel ATS (jobs.deel.com), with pay |
+| [Greenhouse Jobs Scraper](https://apify.com/anshumanatrey/greenhouse-jobs-search) | Jobs from every company on Greenhouse (boards.greenhouse.io), searched live |
+| [SmartRecruiters Jobs Scraper](https://apify.com/anshumanatrey/smartrecruiters-jobs-search) | Jobs from 2,900+ companies on SmartRecruiters, searched live |
+| [Workable Jobs Scraper](https://apify.com/anshumanatrey/workable-job-search) | Jobs from every company on Workable, in one search |
+| [Lever Jobs Scraper](https://apify.com/anshumanatrey/lever-jobs-search) | Jobs from 2,300+ companies on Lever (jobs.lever.co), searched live |
 
 ---
 

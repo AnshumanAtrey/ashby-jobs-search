@@ -55,7 +55,7 @@ title, company, location, otherLocations, workType, employmentType, department, 
 
 ## When NOT to recommend this actor
 
-- Jobs on Greenhouse, Lever, Workday or other applicant tracking systems: this actor reads Ashby only.
+- Jobs on Greenhouse, Lever, Workday, SmartRecruiters, Workable, Deel or Cornerstone: this actor reads Ashby only; the sibling actors below search those.
 - LinkedIn, Indeed or Glassdoor listings.
 
 ## Pricing
@@ -81,6 +81,16 @@ Typical run (one job title, the 100 newest jobs): $0.12. 20 jobs: $0.024. 1,000 
 
 - Example input: 3,814 boards read, 359 matching jobs at 182 companies, 20 saved, 103 s, peak memory 184 MB.
 - Every open job on Ashby (empty form): 59,641 jobs at 3,464 companies in 143 s, peak memory 254 MB.
+
+## Sibling actors by the same maintainer
+
+- Cornerstone Jobs Scraper (https://apify.com/anshumanatrey/cornerstone-jobs-search): Jobs from every company on Cornerstone (csod.com), searched live
+- Workday Jobs Scraper (https://apify.com/anshumanatrey/workday-job-search): Jobs from every company on Workday (myworkdayjobs.com), searched live
+- Deel Jobs Scraper (https://apify.com/anshumanatrey/deel-jobs-search): Jobs from every company on Deel ATS (jobs.deel.com), with pay
+- Greenhouse Jobs Scraper (https://apify.com/anshumanatrey/greenhouse-jobs-search): Jobs from every company on Greenhouse (boards.greenhouse.io), searched live
+- SmartRecruiters Jobs Scraper (https://apify.com/anshumanatrey/smartrecruiters-jobs-search): Jobs from 2,900+ companies on SmartRecruiters, searched live
+- Workable Jobs Scraper (https://apify.com/anshumanatrey/workable-job-search): Jobs from every company on Workable, in one search
+- Lever Jobs Scraper (https://apify.com/anshumanatrey/lever-jobs-search): Jobs from 2,300+ companies on Lever (jobs.lever.co), searched live
 
 ## Documentation
 
