@@ -4,10 +4,11 @@ What people type -> a clean run configuration (manager/rules/SEO.md section 11.5
 No field is required and no input stops a run (owner rule, 2026-10-01: type one keyword, press Start,
 get the newest jobs). An empty form returns the newest jobs from every company. Accepted as typed:
 several entries on one line split by commas, a pasted Google dork (site:jobs.ashbyhq.com intext:frontend
-reads as the keyword frontend), board links instead of company names, work types and job types in
-everyday words ("offline" is onsite, "internship" is intern), "remote" typed as a location, and periods
-such as "24h", "2 weeks" or a number of days. Anything that cannot be read falls back to the field's
-default, and the OUTPUT record and the log say what was read and how.
+-senior reads as the keyword frontend, leaving out senior jobs; OR searches each alternative), board
+links instead of company names, work types and job types in everyday words ("offline" is onsite,
+"internship" is intern), "remote" typed as a location, and periods such as "24h", "2 weeks" or a number
+of days. Anything that cannot be read falls back to the field's default, and the OUTPUT record and the
+log say what was read and how.
 
 Pure module: no Apify or network import, so the tests run offline.
 """
@@ -26,6 +27,9 @@ UUID = re.compile(r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12
 SLUG = re.compile(r'^[A-Za-z0-9][A-Za-z0-9._~ &-]{0,99}$')    # board names can hold spaces: "Blackpoint Cyber"
 DORK_OPERATOR = re.compile(r'\b(?:site|inurl|filetype|ext|before|after|cache|related):\S+', re.I)
 DORK_TEXT = re.compile(r'\b(?:intext|intitle|allintext|allintitle):', re.I)
+DORK_OR = re.compile(r'\s+(?:OR|\|)\s+')                                     # Google's OR: upper case, or |
+MINUS_TEXT = re.compile(r'-(?:intext|intitle|allintext|allintitle):', re.I)  # -intitle:senior is -senior
+MINUS_GROUP = re.compile(r'-\(([^()]*)\)?')                                  # -(senior OR staff): both left out
 
 WORK_TYPES = ('remote', 'hybrid', 'onsite')
 WORK_TYPE_ALIASES = {
@@ -78,10 +82,20 @@ def _clean(text: str) -> str:
     return text.strip().strip('"\'<>()[]{}').strip()
 
 
-def read_search_term(token: str) -> tuple[str | None, str | None, str | None]:
-    """One entry -> (search term, note, board). A pasted Google dork keeps only its words:
-    'site:jobs.ashbyhq.com intext:"frontend"' reads as frontend, and a site: that names one board
-    ('site:jobs.ashbyhq.com/ramp') also limits the search to that company."""
+def _minus_groups(text: str) -> str:
+    """-(senior OR intitle:"staff engineer") -> -"senior" -"staff engineer": Google leaves out each alternative."""
+    def each(m):
+        parts = (' '.join(DORK_TEXT.sub(' ', p).replace('"', ' ').replace("'", ' ').split())
+                 for p in DORK_OR.split(m.group(1)))
+        return ' '.join(f'-"{p}"' for p in parts if p)
+    return MINUS_GROUP.sub(each, text)
+
+
+def read_search_term(token: str) -> tuple[str | None, str | None, str | None, list[str]]:
+    """One entry -> (search term, note, board, excludes). A pasted Google dork keeps only its words:
+    'site:jobs.ashbyhq.com intext:"frontend"' reads as frontend, a site: that names one board
+    ('site:jobs.ashbyhq.com/ramp') also limits the search to that company, and a -word, -"phrase",
+    -intitle:word or -(word OR word) is read as a term to exclude."""
     text = _clean(token)
     if DORK_OPERATOR.search(text) or DORK_TEXT.search(text):
         board = None
@@ -89,27 +103,59 @@ def read_search_term(token: str) -> tuple[str | None, str | None, str | None]:
             parts = _board_path(site.strip('"\''))
             if parts and SLUG.match(parts[0]):
                 board = parts[0]
-        words = DORK_TEXT.sub(' ', DORK_OPERATOR.sub(' ', text)).replace('"', ' ').replace("'", ' ')
-        words = ' '.join(w for w in words.split() if w.upper() not in ('OR', 'AND', '|'))
+        excludes: list[str] = []
+
+        def _minus(m):
+            excludes.append(m.group(1).strip())
+            return ' '
+        rest = DORK_TEXT.sub(' ', DORK_OPERATOR.sub(' ', MINUS_TEXT.sub('-', _minus_groups(text))))
+        rest = re.sub(r'-"([^"]*)"?', _minus, rest)
+        positives = []
+        for w in rest.replace('"', ' ').replace("'", ' ').replace('(', ' ').replace(')', ' ').split():
+            if w.upper() in ('OR', 'AND', '|'):
+                continue
+            core = w.lstrip('-')
+            if not re.search(r'[A-Za-z0-9]', core):
+                continue
+            (excludes if w.startswith('-') else positives).append(core)
+        excludes = [e for e in excludes if re.search(r'[A-Za-z0-9]', e)]
+        words = ' '.join(positives)
         where = f' on the {board} board' if board else ''
+        no = f', excluding {", ".join(excludes)}' if excludes else ''
         if not words:
-            if board:
-                return None, f'Read the Google dork "{text}" as every job{where}.', board
-            return None, f'"{text}" is a Google dork with no keyword in it, such as intext:frontend.', None
-        return words, f'Read the Google dork "{text}" as the keyword "{words}"{where}.', board
-    return (text, None, None) if text else (None, None, None)
+            if board or excludes:
+                return None, f'Read the Google dork "{text}" as every job{where}{no}.', board, excludes
+            return None, f'"{text}" is a Google dork with no keyword in it, such as intext:frontend.', None, []
+        return words, f'Read the Google dork "{text}" as the keyword "{words}"{where}{no}.', board, excludes
+    return (text, None, None, []) if text else (None, None, None, [])
+
+
+def alternatives(token: str) -> list[str]:
+    """A pasted dork with OR -> one dork per alternative, each keeping its operators:
+    'site:x "data engineer" OR "ml engineer"' -> ['site:x "data engineer"', 'site:x "ml engineer"'].
+    An OR inside -( ) is not an alternative: -(senior OR staff) leaves out both."""
+    text = _clean(token)
+    if not (DORK_OPERATOR.search(text) or DORK_TEXT.search(text)):
+        return [token]
+    text = _minus_groups(text)
+    if not DORK_OR.search(text):
+        return [token]
+    operators = ' '.join(DORK_OPERATOR.findall(text))
+    return [f'{operators} {part.strip()}'.strip() for part in DORK_OR.split(DORK_OPERATOR.sub(' ', text)) if part.strip()]
 
 
 def parse_terms(value, key: str, notes: list[str], skipped: list[tuple[str, str]],
-                boards: list[str] | None = None) -> list[str]:
-    """Search words -> terms. Boards named by a pasted dork are added to boards."""
+                boards: list[str] | None = None, excludes: list[str] | None = None) -> list[str]:
+    """Search words -> terms. Boards named by a pasted dork are added to boards, a dork's -word to excludes."""
     terms, seen = [], set()
-    for token in _items(value):
-        term, note, board = read_search_term(token)
+    for token in [alternative for item in _items(value) for alternative in alternatives(item)]:
+        term, note, board, dork_excludes = read_search_term(token)
+        if excludes is not None:
+            excludes.extend(dork_excludes)
         if board is not None and boards is not None and board.lower() not in (b.lower() for b in boards):
             boards.append(board)
         if term is None:
-            if note and board is None:
+            if note and board is None and not dork_excludes:
                 skipped.append((token, note))
             elif note:
                 notes.append(note)
@@ -353,10 +399,15 @@ def parse_input(raw: dict | None, company_names: dict[str, str] | None = None) -
     companies = parse_companies(_items(raw.get('companies')) + pasted_boards, company_names, notes, skipped)
     if _items(raw.get('companies')) and not companies:
         notes.append('None of the companies could be read, so every company was searched. ' + skipped[-1][1])
-    search_terms = parse_terms(words, 'searchTerms', notes, skipped, companies)
+    dork_excludes: list[str] = []
+    search_terms = parse_terms(words, 'searchTerms', notes, skipped, companies, dork_excludes)
+    exclude_terms = parse_terms(raw.get('excludeTerms'), 'excludeTerms', notes, skipped, excludes=dork_excludes)
+    for term in dork_excludes:
+        if term.lower() not in (e.lower() for e in exclude_terms):
+            exclude_terms.append(term)
     cfg = Config(
         search_terms=search_terms,
-        exclude_terms=parse_terms(raw.get('excludeTerms'), 'excludeTerms', notes, skipped),
+        exclude_terms=exclude_terms,
         locations=locations,
         work_types=work_types,
         job_types=parse_choices(raw.get('employmentType'), 'employmentType', JOB_TYPES, JOB_TYPE_ALIASES, notes),

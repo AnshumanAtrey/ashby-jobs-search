@@ -202,7 +202,7 @@ The run still goes ahead. A value it cannot read falls back to the field's defau
 
 ### Is this the same as the Google dork site:jobs.ashbyhq.com?
 
-It is that search done at the source. Googling site:jobs.ashbyhq.com intext:frontend, with Tools set to Past 24 hours, shows only the pages Google has indexed, and indexed job links go stale: of the Greenhouse job links in a September 2026 web crawl, 30% were already closed two to four weeks later (checked on 2026-09-30). This actor reads every board from Ashby during the run, so every job it returns is open. Paste the dork into the job titles field and its keyword is used.
+It is that search done at the source. Googling site:jobs.ashbyhq.com intext:frontend, with Tools set to Past 24 hours, shows only the pages Google has indexed, and indexed job links go stale: of the Greenhouse job links in a September 2026 web crawl, 30% were already closed two to four weeks later (checked on 2026-09-30). This actor reads every board from Ashby during the run, so every job it returns is open. Paste the dork into Job titles to find (`searchTerms`): its keyword is searched, a site: that names one board (site:jobs.ashbyhq.com/openai) searches only that company, a -word, -"phrase", -intitle:word or -(word OR word) leaves those jobs out as Leave out words (`excludeTerms`) does, and OR searches each alternative. The run's notes say how the dork was read.
 
 ### How is it different from Ashby's own job posting API?
 

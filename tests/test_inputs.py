@@ -32,8 +32,8 @@ class SearchTerms(unittest.TestCase):
         self.assertEqual(parse({'searchTerms': 'frontend, Frontend; designer'}).search_terms, ['frontend', 'designer'])
 
     def test_google_dork_reads_as_the_keyword(self):
-        term, note, board = read_search_term('site:jobs.ashbyhq.com intext:"frontend"')
-        self.assertEqual((term, board), ('frontend', None))
+        term, note, board, excludes = read_search_term('site:jobs.ashbyhq.com intext:"frontend"')
+        self.assertEqual((term, board, excludes), ('frontend', None, []))
         self.assertIn('Google dork', note)
 
     def test_dork_with_one_board_limits_the_company(self):
@@ -44,6 +44,39 @@ class SearchTerms(unittest.TestCase):
         cfg = parse({'searchTerms': ['site:jobs.ashbyhq.com']})
         self.assertEqual(cfg.search_terms, [])
         self.assertIn('no keyword', cfg.skipped[0][1])
+
+    def test_a_dork_minus_reads_as_an_excluded_term(self):
+        # live run RtVG0MrYCVEB7P0ja (build 1.1.5) read this as the keyword "engineer -senior": 5 matches, all senior
+        cfg = parse({'searchTerms': ['site:jobs.ashbyhq.com/openai intitle:engineer -senior']})
+        self.assertEqual((cfg.search_terms, cfg.exclude_terms, cfg.companies), (['engineer'], ['senior'], ['openai']))
+        self.assertIn('as the keyword "engineer" on the openai board, excluding senior.', cfg.notes[0])
+        cfg = parse({'searchTerms': ['site:jobs.ashbyhq.com intitle:"data engineer" -senior -"staff engineer" '
+                                     '-intitle:principal -intitle:"tech lead"'], 'excludeTerms': ['Senior', 'manager']})
+        self.assertEqual(cfg.search_terms, ['data engineer'])
+        self.assertEqual(cfg.exclude_terms[:2], ['Senior', 'manager'])      # typed first, no second senior
+        self.assertCountEqual(cfg.exclude_terms[2:], ['staff engineer', 'principal', 'tech lead'])
+
+    def test_a_dork_with_or_in_parentheses_drops_the_brackets(self):
+        cfg = parse({'searchTerms': ['site:jobs.ashbyhq.com (frontend OR "front end")']})
+        self.assertEqual(cfg.search_terms, ['frontend', 'front end'])
+
+    def test_a_dork_with_or_searches_each_alternative(self):
+        cfg = parse({'searchTerms': ['site:jobs.ashbyhq.com "data engineer" OR "ml engineer"']})
+        self.assertEqual((cfg.search_terms, cfg.companies), (['data engineer', 'ml engineer'], []))
+        cfg = parse({'searchTerms': ['site:jobs.ashbyhq.com/ramp intext:frontend | intext:backend']})
+        self.assertEqual((cfg.search_terms, cfg.companies), (['frontend', 'backend'], ['ramp']))
+        cfg = parse({'searchTerms': ['site:jobs.ashbyhq.com intext:"research and development"', 'sales or marketing']})
+        self.assertEqual(cfg.search_terms, ['research development', 'sales or marketing'])     # no OR: as before
+
+    def test_an_or_inside_a_minus_group_leaves_out_each_alternative(self):
+        cfg = parse({'searchTerms': ['site:jobs.ashbyhq.com intitle:engineer -(senior OR intitle:"tech lead")']})
+        self.assertEqual(cfg.search_terms, ['engineer'])
+        self.assertCountEqual(cfg.exclude_terms, ['senior', 'tech lead'])
+
+    def test_a_dork_of_only_minus_words_is_every_job_without_them(self):
+        cfg = parse({'searchTerms': ['site:jobs.ashbyhq.com -senior']})
+        self.assertEqual((cfg.search_terms, cfg.exclude_terms, cfg.skipped), ([], ['senior'], []))
+        self.assertIn('as every job, excluding senior.', cfg.notes[0])
 
     def test_board_link_in_the_search_box_searches_that_company(self):
         cfg = parse({'searchTerms': ['https://jobs.ashbyhq.com/openai', 'researcher']})

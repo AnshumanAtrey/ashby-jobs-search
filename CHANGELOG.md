@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-11-03 (dork minus and OR)
+
+- A pasted Google dork's minus leaves jobs out. A -word, -"phrase", -intitle:word or -(word OR word) is added to Leave
+  out words (`excludeTerms`, no duplicates); it used to be searched as a required word, so live run RtVG0MrYCVEB7P0ja
+  (build 1.1.5) read site:jobs.ashbyhq.com/openai intitle:engineer -senior as the keyword "engineer -senior" and found 5
+  jobs, all senior. A local run of the same dork on 2026-11-03 found 347 OpenAI engineer jobs and saved the 100 newest,
+  none senior; Ashby's posting API listed 352 engineer jobs at OpenAI then, 5 of them senior.
+- OR in a dork searches each alternative and drops the brackets: (frontend OR "front end") reads as frontend and front
+  end, not the one keyword "(frontend front end", and "data engineer" OR "ml engineer" as two searches, not one.
+- The run notes say what a dork left out; a dork of only minus words reads as every job without them.
+
 ## 2026-11-03 (listing)
 
 - Cross-links: the README's sibling table and a new llms.txt list now name the seven other job actors of the family
