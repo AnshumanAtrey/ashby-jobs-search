@@ -1,5 +1,18 @@
 # Changelog
 
+## 2026-11-03 (listing)
+
+- Cross-links: the README's sibling table and a new llms.txt list now name the seven other job actors of the family
+  (Cornerstone, Workday, Deel, Greenhouse, SmartRecruiters, Workable, Lever) in place of six actors unrelated to jobs,
+  and the Limitations and llms.txt send Greenhouse, Lever and other ATS searches to them.
+- README and llms.txt: the price per Apify plan with the Store discounts, the free $5 credit in jobs (4,166, or 3,703 with
+  details), every output field with its dual label, calls from the Apify API, Python, JavaScript, n8n and the MCP
+  server, and answers for the free plan, one company, a list of job links, how often to run, Ashby's own API and
+  legality. Speed and the MCP proof come from build 1.1.5 runs on 2026-10-29 (6hcFeE2vcZZtjuWo5, dgUNTjJsfqIGdXSKu,
+  28CpyA9m1tau9GAaW).
+- Corrected: the company list was rebuilt once, on 2026-09-30, not "regularly", and the 143-second worst case read
+  every board but saved 100 jobs, so the every-job answer no longer promises 60,000 rows in that time.
+
 ## 2026-10-30
 
 - Apify SDK 4 (`apify>=4.1,<5`): SDK 3.4.1 raised on runs started by Apify's AI assistant (run origin
