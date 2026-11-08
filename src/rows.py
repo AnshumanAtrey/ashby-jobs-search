@@ -141,8 +141,9 @@ class Area:
 
 
 class Place:
-    def __init__(self, text: str):
+    def __init__(self, text: str, remote_only: bool = False):
         self.text = text
+        self.remote_only = remote_only        # typed as remote jobs there: "Remote EMEA" next to other places
         self.words = ' '.join(words(text))
         self.kind, self.countries = classify_place(text)
 
@@ -255,7 +256,8 @@ class Filters:
     def __init__(self, cfg):
         self.terms = terms(cfg.search_terms)
         self.excludes = terms(cfg.exclude_terms)
-        self.places = [Place(p) for p in cfg.locations]
+        remote = {p.lower() for p in getattr(cfg, 'remote_places', None) or []}
+        self.places = [Place(p, p.lower() in remote) for p in cfg.locations]
         self.work_types = set(cfg.work_types)
         self.job_types = set(cfg.job_types)
         self.within_days = cfg.posted_within_days
@@ -297,7 +299,8 @@ class Filters:
             return False
         if self.places:
             area = job_area(job)
-            if not any(p.matches(area) for p in self.places):
+            remote = any(p.remote_only for p in self.places) and work_type(job) == 'remote'
+            if not any(p.matches(area) and (not p.remote_only or remote) for p in self.places):
                 return False
         if self.within_days is not None:
             posted = parse_time(job.get('publishedAt'))

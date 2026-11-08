@@ -386,6 +386,8 @@ class Run:
             else:
                 text = (f'No open job matched on {where} in {seconds} s. Try fewer words, another place '
                         f'or a longer period.')
+                for note in cfg.notes:          # how the input was read can be why nothing matched (2026-11-08)
+                    text += f' {note}'
         if self.stop:
             text += f' Stopped early: {STOP_REASONS[self.stop]}'
         if cfg.companies and self.boards_missing:
@@ -415,6 +417,7 @@ class Run:
             'skipped': [{'input': text, 'reason': why} for text, why in cfg.skipped],
             'settings': {
                 'searchTerms': cfg.search_terms, 'excludeTerms': cfg.exclude_terms, 'location': cfg.locations,
+                'remoteOnlyIn': cfg.remote_places,
                 'workType': cfg.work_types, 'employmentType': cfg.job_types,
                 'postedWithinDays': cfg.posted_within_days, 'maxJobs': cfg.max_jobs,
                 'includeDetails': cfg.include_details, 'searchDescriptions': cfg.search_descriptions,

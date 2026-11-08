@@ -43,6 +43,28 @@ def filters(**raw) -> Filters:
     return Filters(parse_input(raw))
 
 
+class RemoteNextToPlaces(unittest.TestCase):
+    @staticmethod
+    def at(name, country, kind):
+        return job(location=name, secondaryLocations=[], isRemote=kind == 'Remote', workplaceType=kind,
+                   address={'postalAddress': {'addressCountry': country}} if country else {})
+
+    def test_remote_next_to_places_adds_remote_jobs_and_keeps_the_places_open(self):
+        mixed = filters(location=['Barcelona', 'Spain', 'Europe', 'Remote'])
+        self.assertTrue(mixed.passes(self.at('Barcelona', 'Spain', 'OnSite'), NOW))
+        self.assertTrue(mixed.passes(self.at('Remote', None, 'Remote'), NOW))
+        self.assertFalse(mixed.passes(self.at('Remote', 'United States', 'Remote'), NOW))
+        alone = filters(location=['Remote'])
+        self.assertTrue(alone.passes(self.at('Remote', 'United States', 'Remote'), NOW))
+        self.assertFalse(alone.passes(self.at('Barcelona', 'Spain', 'OnSite'), NOW))
+
+    def test_a_remote_place_next_to_a_plain_place_is_remote_only_there(self):
+        chosen = filters(location=['Barcelona', 'Remote EMEA'])
+        self.assertTrue(chosen.passes(self.at('Barcelona', 'Spain', 'OnSite'), NOW))
+        self.assertTrue(chosen.passes(self.at('Paris', 'France', 'Remote'), NOW))
+        self.assertFalse(chosen.passes(self.at('Paris', 'France', 'OnSite'), NOW))
+
+
 class TitleWords(unittest.TestCase):
     def test_joined_and_split_words_match_each_other(self):
         for title in ('Senior Frontend Engineer', 'Front-End Engineer', 'Front End Developer'):

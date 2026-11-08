@@ -59,6 +59,7 @@ class Config:
     search_terms: list[str] = field(default_factory=list)
     exclude_terms: list[str] = field(default_factory=list)
     locations: list[str] = field(default_factory=list)
+    remote_places: list[str] = field(default_factory=list)    # locations asked as remote jobs there ("Remote EMEA")
     work_types: list[str] = field(default_factory=list)       # empty: every work type
     job_types: list[str] = field(default_factory=list)        # empty: every job type
     posted_within_days: float | None = None                  # None: any time
@@ -221,45 +222,128 @@ def parse_choices(value, key: str, allowed: tuple[str, ...], aliases: dict[str, 
 
 
 REMOTE_WORDS = re.compile(r'\b(?:fully\s+)?remote(?:ly)?\b|\bwfh\b', re.I)
+REMOTE_ANYWHERE = 'Remote worldwide'   # the place a lone "Remote" stands for next to other places
 
 
-def parse_locations(value, work_types: list[str], notes: list[str]) -> tuple[list[str], list[str]]:
-    """Places -> (places, work types). "Remote" typed as a place asks for remote jobs, so it moves to
-    the work type (a place next to it still filters, as in "Remote, United States" or "Remote EMEA").
-    "Worldwide", "Anywhere" and "Global" stay places: they find the jobs open everywhere."""
-    chosen, moved = [], list(work_types)
-    for token in _items(value):
-        text = _clean(token)
-        toks = places.tokens(text)
-        if places.world_query(toks):
-            notes.append(f'Read "{text}" in location as jobs open worldwide: marked worldwide, global or anywhere, '
-                         f'or just "Remote" with no country.')
+def location_entries(value) -> list[list[str]]:
+    """The location field -> its entries, each split into its parts. An entry is one choice; its parts (split by
+    commas, semicolons or new lines) are places named together: "Remote, United States" typed as one entry is
+    remote jobs in the United States, while ["Spain", "Remote"] is two choices."""
+    raw = value if isinstance(value, list) else [value] if isinstance(value, (str, int, float)) else []
+    entries = []
+    for item in raw:
+        if isinstance(item, (str, int, float)):
+            parts = [part.strip() for part in SPLIT.split(str(item)) if part.strip()]
+            if parts:
+                entries.append(parts)
+    return entries
+
+
+def _read_part(token: str, notes: list[str], skipped: list | None = None) -> tuple[str, str | None, str | None]:
+    """One part of a location entry -> (what it is, place, work type): ('skip', None, None), ('place', text, None),
+    ('remote', place or None, 'remote') for "Remote EMEA" or a bare "Remote", or ('work', None, kind) for another
+    work type typed as a place ("Hybrid")."""
+    text = _clean(token)
+    if not re.search(r'[^\W_]', text):
+        if skipped is not None:
+            skipped.append((token, f'"{token}" in location has no letters or digits to match.'))
+        return 'skip', None, None
+    if places.world_query(places.tokens(text)):
+        notes.append(f'Read "{text}" in location as jobs open worldwide: marked worldwide, global or anywhere, '
+                     f'or just "Remote" with no country.')
+        return 'place', text, None
+    kind = _alias(text, WORK_TYPE_ALIASES)
+    if kind == 'remote':
+        return 'remote', None, 'remote'
+    if kind:
+        return 'work', None, kind
+    rest = REMOTE_WORDS.sub(' ', text)
+    if rest != text:                                         # "Remote EMEA", "Remote - US", "Remote 100%"
+        rest = re.sub(r'^(?:in|within|from)\s+', '', rest.strip(' \t-–—:,()%'), flags=re.I).strip(' \t-–—:,()%')
+        if not re.search(r'[^\W\d_]', rest):
+            return 'remote', None, 'remote'
+        _region_note(rest, notes)
+        return 'remote', rest, 'remote'
+    _region_note(text, notes)
+    return 'place', text, None
+
+
+def _region_note(text: str, notes: list[str]) -> None:
+    place, countries = classify_place(text)
+    if place == 'region':
+        notes.append(f'Read "{text}" in location as a region of {len(countries)} countries: it finds jobs in '
+                     f'them, jobs posted for the region and jobs open worldwide.')
+
+
+def parse_locations(entries: list[list[str]], work_types: list[str], notes: list[str],
+                    skipped: list | None = None) -> tuple[list[str], list[str], list[str]]:
+    """Location entries (location_entries) -> (places, work types, remote places). Each entry is one choice: a job
+    matches when it matches any of them.
+
+    - "Remote" inside an entry asks for remote jobs in that entry's places: "Remote EMEA", "Remote - US", or
+      "Remote, United States" typed as one entry.
+    - When every entry asks for remote jobs, remote moves to the work type, as if Work type were Remote: "Remote"
+      alone is every remote job, "Remote EMEA" every remote job in EMEA.
+    - Next to an entry that names a place with no "Remote", every entry keeps its own meaning: the plain places keep
+      every work type, "Remote EMEA" stays remote jobs in EMEA (a remote place), and "Remote" as an entry of its own
+      finds the remote jobs open everywhere, as "Worldwide" does (REMOTE_ANYWHERE). ["Barcelona", "Spain", "Remote"]
+      is every job in Barcelona or Spain plus the remote jobs open to anyone. (Until 2026-11-08 it was remote jobs
+      only, so a Deel user's search for Barcelona, Spain, EMEA, Europe or Remote found none of the 4 jobs there.)
+    - "Hybrid" or "On-site" typed as a place moves to the work type, and so does every remote word next to it.
+    "Worldwide", "Anywhere" and "Global" stay places: they find the jobs open everywhere. An entry with no letter
+    or digit ("!!!") would match no job, so it is skipped with a reason."""
+    read = []                                    # per entry: (its text, its places, whether it asks remote)
+    other_kinds = []                             # hybrid or onsite typed as a place
+    for parts in entries:
+        found, remote = [], False
+        for token in parts:
+            what, place, kind = _read_part(token, notes, skipped)
+            if what == 'work':
+                other_kinds.append(kind)
+                notes.append(f'Read "{_clean(token)}" in location as the {kind} work type.')
+            elif what == 'remote':
+                remote = True
+                if place:
+                    found.append(place)
+            elif what == 'place':
+                found.append(place)
+        if found or remote:
+            read.append((', '.join(_clean(t) for t in parts), found, remote))
+    plain = any(found and not remote for _, found, remote in read)
+    each_its_own = plain and not other_kinds and any(remote for *_, remote in read)
+    moved, chosen = list(work_types), {}        # chosen: lower text -> [text, asks remote]
+
+    def add(text: str, remote: bool) -> None:
+        item = chosen.setdefault(text.lower(), [text, remote])
+        item[1] = item[1] and remote             # a place also asked plainly keeps every work type
+
+    for text, found, remote in read:
+        if not remote:
+            for place in found:
+                add(place, False)
+        elif each_its_own and found:
+            for place in found:
+                add(place, True)
+            notes.append(f'Read "{text}" in location as remote jobs in {", ".join(found)}; the other places keep '
+                         f'every work type.')
+        elif each_its_own:
+            add(REMOTE_ANYWHERE, False)
+            notes.append(f'Read "{text}" next to other places as the remote jobs open everywhere (marked worldwide, '
+                         f'global or anywhere, or just "Remote" with no country); the other places keep every work '
+                         f'type. To get remote jobs only, set Work type to Remote.')
         else:
-            kind = _alias(text, WORK_TYPE_ALIASES)
-            if kind:
-                if kind not in moved:
-                    moved.append(kind)
-                notes.append(f'Read "{text}" in location as the {kind} work type.')
-                continue
-            rest = REMOTE_WORDS.sub(' ', text)
-            if rest != text:                                         # "Remote EMEA", "Remote - US", "Remote 100%"
-                rest = re.sub(r'^(?:in|within|from)\s+', '', rest.strip(' \t-–—:,()%'), flags=re.I).strip(' \t-–—:,()%')
-                if 'remote' not in moved:
-                    moved.append('remote')
-                if not re.search(r'[^\W\d_]', rest):
-                    notes.append(f'Read "{text}" in location as the remote work type.')
-                    continue
-                notes.append(f'Read "{text}" in location as the remote work type in {rest}.')
-                text = rest
-            place, countries = classify_place(text)
-            if place == 'region':
-                notes.append(f'Read "{text}" in location as a region of {len(countries)} countries: it finds jobs in '
-                             f'them, jobs posted for the region and jobs open worldwide.')
-        if text and text.lower() not in (p.lower() for p in chosen):
-            chosen.append(text)
+            if 'remote' not in moved:
+                moved.append('remote')
+            notes.append(f'Read "{text}" in location as the remote work type' +
+                         (f' in {", ".join(found)}.' if found else '.'))
+            for place in found:
+                add(place, False)
+    for kind in other_kinds:
+        if kind not in moved:
+            moved.append(kind)
     if len(moved) == len(WORK_TYPES):
         moved = []
-    return chosen, moved
+    return [t for t, _ in chosen.values()], moved, [t for t, r in chosen.values() if r]
 
 
 def parse_period(value, notes: list[str]) -> float | None:
@@ -395,7 +479,7 @@ def parse_input(raw: dict | None, company_names: dict[str, str] | None = None) -
     if _items(raw.get('jobUrls')) and not job_urls:
         notes.append('None of the job links could be read, so the run searched instead. ' + skipped[0][1])
     work_types = parse_choices(raw.get('workType'), 'workType', WORK_TYPES, WORK_TYPE_ALIASES, notes)
-    locations, work_types = parse_locations(raw.get('location'), work_types, notes)
+    locations, work_types, remote_places = parse_locations(location_entries(raw.get('location')), work_types, notes)
     companies = parse_companies(_items(raw.get('companies')) + pasted_boards, company_names, notes, skipped)
     if _items(raw.get('companies')) and not companies:
         notes.append('None of the companies could be read, so every company was searched. ' + skipped[-1][1])
@@ -409,6 +493,7 @@ def parse_input(raw: dict | None, company_names: dict[str, str] | None = None) -
         search_terms=search_terms,
         exclude_terms=exclude_terms,
         locations=locations,
+        remote_places=remote_places,
         work_types=work_types,
         job_types=parse_choices(raw.get('employmentType'), 'employmentType', JOB_TYPES, JOB_TYPE_ALIASES, notes),
         posted_within_days=parse_period(raw.get('postedWithin'), notes),

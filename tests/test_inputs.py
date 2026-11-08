@@ -107,6 +107,16 @@ class Places(unittest.TestCase):
         cfg = parse({'location': 'Remote 100%'})
         self.assertEqual((cfg.locations, cfg.work_types), ([], ['remote']))
 
+    def test_remote_next_to_places_is_one_more_choice_not_a_filter_on_all(self):
+        # the same input as a Deel user's (run UxZ0dOfitMrBnt6TF): remote-only found none of the jobs there
+        cfg = parse({'location': ['Barcelona', 'Spain', 'EMEA', 'Europe', 'Remote']})
+        self.assertEqual((cfg.locations, cfg.work_types, cfg.remote_places),
+                         (['Barcelona', 'Spain', 'EMEA', 'Europe', 'Remote worldwide'], [], []))
+        cfg = parse({'location': ['Barcelona', 'Remote EMEA']})
+        self.assertEqual((cfg.locations, cfg.work_types, cfg.remote_places), (['Barcelona', 'EMEA'], [], ['EMEA']))
+        cfg = parse({'location': ['Remote', 'Remote EMEA']})          # every entry remote: the work type, as before
+        self.assertEqual((cfg.locations, cfg.work_types, cfg.remote_places), (['EMEA'], ['remote'], []))
+
     def test_offline_means_onsite(self):
         cfg = parse({'workType': ['offline']})
         self.assertEqual(cfg.work_types, ['onsite'])
