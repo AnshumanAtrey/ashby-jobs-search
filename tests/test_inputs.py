@@ -111,7 +111,7 @@ class Places(unittest.TestCase):
         # the same input as a Deel user's (run UxZ0dOfitMrBnt6TF): remote-only found none of the jobs there
         cfg = parse({'location': ['Barcelona', 'Spain', 'EMEA', 'Europe', 'Remote']})
         self.assertEqual((cfg.locations, cfg.work_types, cfg.remote_places),
-                         (['Barcelona', 'Spain', 'EMEA', 'Europe', 'Remote worldwide'], [], []))
+                         (['Barcelona', 'Spain', 'EMEA', 'Europe'], [], []))
         cfg = parse({'location': ['Barcelona', 'Remote EMEA']})
         self.assertEqual((cfg.locations, cfg.work_types, cfg.remote_places), (['Barcelona', 'EMEA'], [], ['EMEA']))
         cfg = parse({'location': ['Remote', 'Remote EMEA']})          # every entry remote: the work type, as before

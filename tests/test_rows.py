@@ -52,7 +52,8 @@ class RemoteNextToPlaces(unittest.TestCase):
     def test_remote_next_to_places_adds_remote_jobs_and_keeps_the_places_open(self):
         mixed = filters(location=['Barcelona', 'Spain', 'Europe', 'Remote'])
         self.assertTrue(mixed.passes(self.at('Barcelona', 'Spain', 'OnSite'), NOW))
-        self.assertTrue(mixed.passes(self.at('Remote', None, 'Remote'), NOW))
+        self.assertTrue(mixed.passes(self.at('Remote - Europe', None, 'Remote'), NOW))   # remote in a place asked
+        self.assertFalse(mixed.passes(self.at('Remote', None, 'Remote'), NOW))           # just "Remote": Worldwide's
         self.assertFalse(mixed.passes(self.at('Remote', 'United States', 'Remote'), NOW))
         alone = filters(location=['Remote'])
         self.assertTrue(alone.passes(self.at('Remote', 'United States', 'Remote'), NOW))

@@ -222,7 +222,6 @@ def parse_choices(value, key: str, allowed: tuple[str, ...], aliases: dict[str, 
 
 
 REMOTE_WORDS = re.compile(r'\b(?:fully\s+)?remote(?:ly)?\b|\bwfh\b', re.I)
-REMOTE_ANYWHERE = 'Remote worldwide'   # the place a lone "Remote" stands for next to other places
 
 
 def location_entries(value) -> list[list[str]]:
@@ -285,10 +284,13 @@ def parse_locations(entries: list[list[str]], work_types: list[str], notes: list
     - When every entry asks for remote jobs, remote moves to the work type, as if Work type were Remote: "Remote"
       alone is every remote job, "Remote EMEA" every remote job in EMEA.
     - Next to an entry that names a place with no "Remote", every entry keeps its own meaning: the plain places keep
-      every work type, "Remote EMEA" stays remote jobs in EMEA (a remote place), and "Remote" as an entry of its own
-      finds the remote jobs open everywhere, as "Worldwide" does (REMOTE_ANYWHERE). ["Barcelona", "Spain", "Remote"]
-      is every job in Barcelona or Spain plus the remote jobs open to anyone. (Until 2026-11-08 it was remote jobs
-      only, so a Deel user's search for Barcelona, Spain, EMEA, Europe or Remote found none of the 4 jobs there.)
+      every work type, and "Remote EMEA" stays remote jobs in EMEA (a remote place). "Remote" as an entry of its own
+      narrows nothing: the places already hold their remote jobs ("Spain - Remote", "Remote, UK") and the jobs marked
+      worldwide. ["Barcelona", "Spain", "Remote"] is every job in Barcelona or Spain. Until 2026-11-08 it was remote
+      jobs only, so a Deel user's search for Barcelona, Spain, EMEA, Europe or Remote found none of the 4 jobs there
+      (run UxZ0dOfitMrBnt6TF). Reading a lone "Remote" as every job that says just "Remote" was tried and measured
+      the same day: on that user's Greenhouse search it added 9 such jobs to 60, mostly US-only roles ("Provider
+      Partnerships Regional Manager (Austin / San Antonio)"), so "Worldwide" stays the way to ask for them.
     - "Hybrid" or "On-site" typed as a place moves to the work type, and so does every remote word next to it.
     "Worldwide", "Anywhere" and "Global" stay places: they find the jobs open everywhere. An entry with no letter
     or digit ("!!!") would match no job, so it is skipped with a reason."""
@@ -327,10 +329,9 @@ def parse_locations(entries: list[list[str]], work_types: list[str], notes: list
             notes.append(f'Read "{text}" in location as remote jobs in {", ".join(found)}; the other places keep '
                          f'every work type.')
         elif each_its_own:
-            add(REMOTE_ANYWHERE, False)
-            notes.append(f'Read "{text}" next to other places as the remote jobs open everywhere (marked worldwide, '
-                         f'global or anywhere, or just "Remote" with no country); the other places keep every work '
-                         f'type. To get remote jobs only, set Work type to Remote.')
+            notes.append(f'Read "{text}" next to other places as their remote jobs, which they already hold with '
+                         f'every other work type there. To get remote jobs only, set Work type to Remote; to add the '
+                         f'jobs that say just "Remote" with no country, add Worldwide.')
         else:
             if 'remote' not in moved:
                 moved.append('remote')
