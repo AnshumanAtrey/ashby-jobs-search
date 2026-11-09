@@ -33,14 +33,20 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    outputs:
+      is_public: ${{ steps.meta.outputs.is_public }}
     steps:
       - uses: actions/checkout@v4
 
       # The actor is pinned by ID (.actor/store.json actorId), so a rename of
       # actor.json "name" updates the same actor instead of creating a new one.
+      # A private Actor (store.json isPublic false) gets no example tasks and no MCP Registry entry: both are public
+      # pages of their own, so a private build would leak the Actor before its listing is checked (owner, 2026-11-08).
       - name: Read actor ID
         id: meta
-        run: echo "actor_id=$(node -p "require('./.actor/store.json').actorId || ''")" >> "$GITHUB_OUTPUT"
+        run: |
+          echo "actor_id=$(node -p "require('./.actor/store.json').actorId || ''")" >> "$GITHUB_OUTPUT"
+          echo "is_public=$(node -p "Boolean(require('./.actor/store.json').isPublic)")" >> "$GITHUB_OUTPUT"
 
       - name: Push Actor to Apify
         id: push
@@ -67,7 +73,7 @@ jobs:
       # Example tasks are Store landing pages of their own (Google-indexed, with a .md for AI agents).
       # Created and updated from .actor/tasks.json; never deleted.
       - name: Publish example tasks
-        if: ${{ !inputs.build_tag }}
+        if: ${{ !inputs.build_tag && steps.meta.outputs.is_public == 'true' }}
         env:
           APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
         run: node scripts/publish-tasks.mjs
@@ -79,7 +85,7 @@ jobs:
   # number is the workflow run number (see scripts/mcp-server-json.mjs).
   mcp-registry:
     needs: deploy
-    if: ${{ !inputs.build_tag }}
+    if: ${{ !inputs.build_tag && needs.deploy.outputs.is_public == 'true' }}
     runs-on: ubuntu-latest
     permissions:
       id-token: write

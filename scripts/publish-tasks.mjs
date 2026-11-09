@@ -14,6 +14,9 @@
  *
  * Tasks are matched by name: missing ones are created, existing ones updated, unpublished ones published.
  * Nothing is ever deleted; tasks of this Actor that are not in the file are listed and left alone.
+ * The account can publish only so many tasks (100 since September 2026, raised case by case by Apify support): a
+ * publish refused with too-many-public-actor-tasks-per-account leaves that task saved, unpublished and warned
+ * about, without failing the deploy, and the first deploy after a raise publishes it.
  *
  * Usage: APIFY_TOKEN=... node scripts/publish-tasks.mjs [--dry-run]
  */
@@ -79,6 +82,7 @@ for (let offset = 0; ; ) {
 }
 
 let failed = 0;
+let capped = 0;
 for (const t of spec.tasks) {
   const body = {
     name: t.name, title: t.title, description: t.description, input: t.input, options: spec.options,
@@ -95,10 +99,16 @@ for (const t of spec.tasks) {
       console.log(`${have ? 'updated' : 'created'} ${t.name} (${saved.id}), published`);
     }
   } catch (e) {
-    failed += 1;
-    console.error(`FAILED ${t.name}: ${e.message}`);
+    if (e.message.includes('too-many-public-actor-tasks-per-account')) {
+      capped += 1;
+      console.log(`::warning::${t.name} is saved but not published: the account is at its published-task limit`);
+    } else {
+      failed += 1;
+      console.error(`FAILED ${t.name}: ${e.message}`);
+    }
   }
 }
+if (capped) console.log(`${capped} task(s) wait for a higher published-task limit (support@apify.com); the next deploy after the raise publishes them`);
 const extra = mine.filter((m) => !spec.tasks.some((t) => t.name === m.name)).map((m) => m.name);
 if (extra.length) console.log(`tasks of this Actor not in tasks.json, left as they are: ${extra.join(', ')}`);
 process.exit(failed ? 1 : 0);
