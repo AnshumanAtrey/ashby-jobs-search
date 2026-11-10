@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-11-11 (example pages)
+
+- Two example pages stay on the Store: OpenAI jobs with salaries and the job link check, the two with search or run
+  evidence. The other 8 stay saved but unpublished (`"publish": false` in `.actor/tasks.json`): the account can publish
+  100 example pages across all its actors.
+
 ## 2026-11-03 (dork minus and OR)
 
 - A pasted Google dork's minus leaves jobs out. A -word, -"phrase", -intitle:word or -(word OR word) is added to Leave

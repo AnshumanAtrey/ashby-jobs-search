@@ -1,5 +1,5 @@
 {
-    "$comment": "Example tasks published on the Store by scripts/publish-tasks.mjs after every deploy (CI only). Each one is a search people type, with its own Google-indexed landing page and .md (manager/rules/SEO.md section 18). Limits: title 63, description 400, seoTitle 60, seoDescription 160 (154 kept), 10 per actor. inputSchemaFields must stay fields of the input schema, or the page stops showing after a build. Every input was run locally on 2026-10-01 and returned jobs.",
+    "$comment": "Example tasks published on the Store by scripts/publish-tasks.mjs after every deploy (CI only). Each one is a search people type, with its own Google-indexed landing page and .md (manager/rules/SEO.md section 18). Limits: title 63, description 400, seoTitle 60, seoDescription 160 (154 kept), 10 per actor. inputSchemaFields must stay fields of the input schema, or the page stops showing after a build. Every input was run locally on 2026-10-01 and returned jobs. Tasks marked publish false stay saved but off the Store: the account publishes at most 100 pages across all actors, so each actor keeps 2 or more by its earnings and search traffic (2026-11-11).",
     "options": {
         "build": "latest",
         "memoryMbytes": 1024,
@@ -8,6 +8,7 @@
     "tasks": [
         {
             "name": "remote-software-engineer-jobs-last-24-hours",
+            "publish": false,
             "title": "Find remote software engineer jobs posted in the last 24 hours",
             "description": "Get every remote software engineer job that the 3,400+ companies hiring on Ashby posted in the last day, newest first, with the company, location, pay range and apply link. Schedule it daily for a fresh remote job feed.",
             "input": {
@@ -39,6 +40,7 @@
         },
         {
             "name": "newest-startup-jobs-today",
+            "publish": false,
             "title": "Get the newest startup jobs posted today on Ashby",
             "description": "Every job posted in the last 24 hours by the companies that hire on Ashby, from OpenAI and Ramp to seed-stage startups, newest first. A daily feed for job boards, newsletters and job seekers.",
             "input": {
@@ -64,6 +66,7 @@
         },
         {
             "name": "ai-machine-learning-engineer-jobs",
+            "publish": false,
             "title": "Find AI and machine learning engineer jobs at startups",
             "description": "Machine learning engineer, AI engineer and applied scientist jobs from the startups and AI labs that hire on Ashby, posted in the last 30 days, newest first, with pay ranges and apply links.",
             "input": {
@@ -123,6 +126,7 @@
         },
         {
             "name": "product-designer-jobs-united-states",
+            "publish": false,
             "title": "Find product designer jobs in the United States",
             "description": "Product designer jobs at US companies that hire on Ashby, newest first: company, city, remote or onsite, pay range and apply link for each opening.",
             "input": {
@@ -153,6 +157,7 @@
         },
         {
             "name": "remote-jobs-europe",
+            "publish": false,
             "title": "Find remote jobs in Europe at startups on Ashby",
             "description": "Remote jobs open to Europe, the United Kingdom, Germany, France, the Netherlands, Spain, Ireland, Poland, Portugal and Sweden, from the companies that hire on Ashby, newest first, with pay ranges and apply links.",
             "input": {
@@ -192,6 +197,7 @@
         },
         {
             "name": "software-engineering-internships",
+            "publish": false,
             "title": "Find software engineering internships at startups",
             "description": "Software engineering internships at the startups and tech companies that hire on Ashby, newest first, with the location, remote or onsite, pay and apply link.",
             "input": {
@@ -225,6 +231,7 @@
         },
         {
             "name": "sales-account-executive-jobs-london",
+            "publish": false,
             "title": "Find sales and account executive jobs in London",
             "description": "Account executive, sales development and other sales jobs at the companies in London that hire on Ashby, newest first, with the pay range and apply link.",
             "input": {
@@ -256,6 +263,7 @@
         },
         {
             "name": "data-scientist-analyst-jobs-with-salaries",
+            "publish": false,
             "title": "Find data scientist and data analyst jobs with salaries",
             "description": "Data scientist, data analyst and analytics engineer jobs from the companies that hire on Ashby, with the salary minimum and maximum, currency, location, description and apply link.",
             "input": {
