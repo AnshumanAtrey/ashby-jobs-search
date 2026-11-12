@@ -6,6 +6,13 @@ Use it as an Ashby jobs API, an Ashby job board scraper, a startup jobs feed, a 
 
 ---
 
+**Use it from an AI assistant:**
+
+- **Claude** (claude.ai and the desktop app): [Add Ashby Jobs to Claude](https://claude.ai/customize/connectors?modal=add-custom-connector&connectorName=Ashby%20Jobs&connectorUrl=https%3A%2F%2Fmcp.apify.com%3Ftools%3Danshumanatrey%2Fashby-jobs-search), click Continue, sign in to Apify, Allow, and ask in plain words.
+- **Claude Code:** `claude mcp add --transport http ashby-jobs-search "https://mcp.apify.com?tools=anshumanatrey/ashby-jobs-search"`, then run `/mcp` to sign in to Apify.
+- **Codex:** `codex mcp add ashby-jobs-search --url "https://mcp.apify.com?tools=anshumanatrey/ashby-jobs-search"`, then `codex mcp login ashby-jobs-search`.
+- **Any other MCP client:** `https://mcp.apify.com?tools=anshumanatrey/ashby-jobs-search`, signed in with Apify or an `Authorization: Bearer <APIFY_TOKEN>` header.
+
 ## What does it do?
 
 Ashby Jobs Scraper searches the job boards of every company on Ashby at once, live, and returns one row per open job, newest first. Ashby is the applicant tracking system behind the job boards of OpenAI, Ramp, Notion, Linear, Snowflake and thousands of startups. Every company gets its own board at jobs.ashbyhq.com followed by the company's name, and Ashby has no search across companies. This actor is that search.

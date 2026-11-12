@@ -6,6 +6,13 @@
 
 An Apify actor that searches every company's Ashby job board at once, for job boards, job seekers, recruiters, sales teams and AI agents. Ashby (the applicant tracking system of OpenAI, Ramp, Notion, Linear, Snowflake and thousands of startups) has no search across companies; this actor carries a list of 3,814 Ashby boards (3,478 hiring, 61,272 open jobs on 2026-09-30) and reads each board live during the run, so every job it returns is open at that moment, newest first. It is the complete, at-the-source version of the Google dork site:jobs.ashbyhq.com, and it also checks pasted Ashby job links: open, closed or not found. It reads the public job boards and Ashby's public job posting API: no login, no API key, no proxy. $1.20 per 1,000 jobs, so Apify's free $5 monthly credit covers 4,166 jobs.
 
+## Use it from an AI assistant
+
+- Claude (claude.ai and the desktop app): https://claude.ai/customize/connectors?modal=add-custom-connector&connectorName=Ashby%20Jobs&connectorUrl=https%3A%2F%2Fmcp.apify.com%3Ftools%3Danshumanatrey%2Fashby-jobs-search (click Continue, sign in to Apify, Allow).
+- Claude Code: claude mcp add --transport http ashby-jobs-search "https://mcp.apify.com?tools=anshumanatrey/ashby-jobs-search", then /mcp to sign in to Apify.
+- Codex: codex mcp add ashby-jobs-search --url "https://mcp.apify.com?tools=anshumanatrey/ashby-jobs-search", then codex mcp login ashby-jobs-search.
+- Any other MCP client: https://mcp.apify.com?tools=anshumanatrey/ashby-jobs-search, signed in with Apify or Authorization: Bearer <APIFY_TOKEN>.
+
 ## Inputs (plain name, then the JSON key)
 
 Nothing is required: one job title and Start gives the 100 newest matching jobs; an empty form gives the 100 newest jobs on Ashby. No input stops a run: unreadable values fall back to the field's default with a note in the OUTPUT record.
